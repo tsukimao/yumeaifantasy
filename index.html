@@ -31,6 +31,32 @@
             display: none;
         }
 
+        #storyDisplay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px; /* 幅を調整 */
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        #nextButton {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
         #battleScreen {
             display: none;
             position: fixed;
@@ -176,11 +202,21 @@
                 width: 80%;
                 font-size: 12px;
             }
+
+            #storyDisplay {
+                width: 80%;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <div id='titleScreen' onclick='startGame()'></div>
+    <div id='titleScreen'>
+        <div id='storyDisplay'>
+            <p id='currentStory'></p>
+            <button id='nextButton' onclick='nextStory()'>次へ</button>
+        </div>
+    </div>
     <div id='battleScreen'>
         <img src='yumeaimatsuri.png' id='hero' class='character'>
         <img src='boss.png' id='boss' class='character'>
@@ -203,6 +239,76 @@
             <button onclick='goToOfficial()'>MATSURIの公式ページ</button>
         </div>
     </div>
-    <script src="game.js"></script>
+    <script>
+        let heroHP = 100;
+        let heroMP = 50;
+        let bossHP = 200;
+        let bossDamage = 0;
+        let gameState = 'title';
+        let storyIndex = 0;
+        let attackCount = 0;
+        let commandIndex = 0;
+
+        const storyParts = [
+            'MATSURIはデジタルワールドの調査員。ある日、怪しい影を追いかけてUNKNOWNを探し始めました。',
+            '彼は未知なる存在に引き寄せられるように、影を追って進みます。',
+            '周囲に不気味な気配が漂っている。MATSURIは注意深く進む。',
+            'UNKNOWNは薄暗い場所から出てきました。彼は恐ろしい目を持ち、MATSURIに向かって近づいてきます。',
+            'MATSURIは彼を追いかけ、ついに真の姿を見せる。',
+        ];
+
+        const vampireStories = [
+            // ブラウザ上で表示する吸血鬼の話
+        ];
+
+        function nextStory() {
+            if (storyIndex < storyParts.length) {
+                document.getElementById('currentStory').innerHTML = storyParts[storyIndex];
+                storyIndex++;
+                if (storyIndex === storyParts.length) {
+                    startGame();
+                }
+            }
+        }
+
+        function startGame() {
+            document.getElementById('titleScreen').style.display = 'none';
+            document.getElementById('battleScreen').style.display = 'block';
+            gameState = 'battle';
+            displayStory();
+            updateStatus();
+            updateCommandAvailability();
+            document.querySelectorAll('.character').forEach(character => character.style.display = 'block');
+        }
+
+        function displayStory() {
+            if (storyIndex < storyParts.length) {
+                document.getElementById('story').innerHTML = storyParts[storyIndex];
+                storyIndex++;
+            }
+            updateCommandAvailability();
+        }
+
+        function updateCommandAvailability() {
+            let commandButtons = document.querySelectorAll('.command-button');
+            if (commandIndex < 5) {
+                commandButtons.forEach(button => {
+                    button.disabled = true;
+                    button.style.opacity = '0.5';
+                });
+                if (commandIndex === 4) {
+                    commandButtons.forEach(button => {
+                        button.disabled = false;
+                        button.style.opacity = '1';
+                    });
+                }
+            }
+            commandIndex++;
+        }
+
+        // 以降の関数は変更なし
+
+        // ...
+    </script>
 </body>
 </html>
