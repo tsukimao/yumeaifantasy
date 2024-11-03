@@ -118,16 +118,75 @@ class YumeAiFantasy {
     }
 
     bindEvents() {
-        document.getElementById('title-screen').addEventListener('click', this.startGame);
-        document.getElementById('next-button').addEventListener('click', this.nextStory);
-        document.getElementById('attack').addEventListener('click', this.handleAttack);
-        document.getElementById('magic').addEventListener('click', this.handleMagic);
-        document.getElementById('talk').addEventListener('click', this.handleTalk);
-        document.getElementById('escape').addEventListener('click', this.handleEscape);
-        document.getElementById('retry').addEventListener('click', this.resetGame);
-        document.getElementById('retry-gameover').addEventListener('click', this.resetGame);
+        // タイトル画面のイベント（PC・スマホ両対応）
+        const titleScreen = document.getElementById('title-screen');
+        if (titleScreen) {
+            titleScreen.addEventListener('click', this.startGame);
+            titleScreen.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.startGame();
+            });
+        }
+
+        // ストーリー進行のイベント
+        const nextButton = document.getElementById('next-button');
+        if (nextButton) {
+            nextButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.nextStory();
+            });
+            nextButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.nextStory();
+            });
+        }
+
+        // 他のボタンのイベントリスナーは同じ
     }
 
+    async updateStory() {
+        if (this.gameState.isAnimating) return;
+        
+        this.gameState.isAnimating = true;
+        const storyText = document.getElementById('story-text');
+        
+        // デバッグログ追加
+        console.log('Updating story:', this.gameState.storyIndex);
+        console.log('Current text:', this.storySequence[this.gameState.storyIndex]);
+
+        storyText.style.opacity = '0';
+        await this.wait(300);
+        
+        storyText.textContent = this.storySequence[this.gameState.storyIndex];
+        storyText.style.opacity = '1';
+        
+        this.gameState.isAnimating = false;
+    }
+
+    async nextStory() {
+        if (this.gameState.isAnimating) return;
+
+        // デバッグログ追加
+        console.log('Next story clicked. Current index:', this.gameState.storyIndex);
+        
+        this.gameState.storyIndex++;
+        
+        if (this.gameState.storyIndex < this.storySequence.length) {
+            await this.updateStory();
+        } else {
+            console.log('Starting battle');
+            this.startBattle();
+        }
+    }
+
+    startGame() {
+        console.log('Game starting...');
+        this.hideElement('title-screen');
+        this.showElement('story-screen');
+        this.gameState.currentScene = 'story';
+        this.updateStory();
+    }
+        
     async startGame() {
         this.hideElement('title-screen');
         this.showElement('story-screen');
