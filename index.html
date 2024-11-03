@@ -13,54 +13,9 @@
             background-color: #000;
         }
 
-        #titleScreen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1000;
-            background: url('YUMEAIFANTASY.title.gif') no-repeat center center fixed;
-            background-size: contain;
-            background-position: center;
-            overflow: hidden;
-        }
-
-        #titleScreen img {
-            display: none;
-        }
-
-        #storyDisplay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px; /* 幅を調整 */
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 10px;
-            overflow-y: auto;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        #nextButton {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.8);
-            border: none;
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-/* 戦闘画面全体 */
+        /* 戦闘画面全体 */
         #battleScreen {
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             position: fixed;
@@ -68,12 +23,14 @@
             left: 0;
             width: 100%;
             height: 100vh;
-            background: url('BG.png
+            background: url('BG.png') no-repeat center center fixed;
+            background-size: cover;
+        }
 
-/* キャラクターの配置 */
+        /* キャラクターの配置 */
         .character {
             position: absolute;
-            width: 100px; /* PC向けのキャラクターサイズ */
+            width: 120px; /* PC向けのキャラクターサイズ */
             height: auto;
         }
 
@@ -86,11 +43,13 @@
             left: 10%;
             bottom: 20%;
         }
+
+        /* コマンドウィンドウ */
         #commands {
             position: absolute;
             bottom: 10px;
             left: 10px;
-            width: 40%;
+            width: 30%;
             background-color: rgba(0, 0, 128, 0.8);
             color: white;
             border-radius: 10px;
@@ -108,188 +67,99 @@
             border: none;
         }
 
-        #story {
-            position: fixed;
+        /* メッセージウィンドウ */
+        #messages {
+            position: absolute;
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            width: 300px;
-            height: auto;
-            max-height: 150px;
-            background: rgba(0, 0, 0, 0.5);
+            width: 80%;
+            background-color: rgba(0, 0, 128, 0.8);
             color: white;
-            padding: 10px;
-            overflow-y: auto;
-            font-size: 14px;
+            border-radius: 10px;
+            padding: 15px;
         }
 
-        @keyframes flash-animation {
-            0% { background-color: white; }
-            100% { background-color: transparent; }
-        }
+        /* ステータス表示 */
+        #status {
+           position :absolute; 
+           bottom :10px ;right :10px ;
+           background-color :rgba(0 ,128 ,128 ,1);
+           border-radius :10px ;
+           padding :15px ;
+           color :white ;
+           font-size :1.2em ;
+           text-align :left ;
+           width :auto ;
+}
 
-        .flash-effect {
-            animation: flash-animation 0.5s ease-in-out;
-        }
+#status p { margin :5px ;}
 
-        #clearScreen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: url('YUMEAIFANTASY.title.gif') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        #clearMessage {
-            font-size: 2em;
-            text-align: center;
-            padding: 20px;
-            animation: text-flicker 0.5s infinite alternate;
-        }
-
-        @keyframes text-flicker {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
-        }
-
-        @media (max-width: 600px) {  /* スマホ向けにスタイルを調整 */
-            .character {
-                width: 60px;
-            }
-
-            #commands {
-                width: 100%;
-                bottom: 70px;
-            }
-
-            #messages {
-                width: 100%;
-                bottom: 20px;
-            }
-
-            #status {
-                font-size: 16px;
-            }
-
-            #story {
-                width: 80%;
-                font-size: 12px;
-            }
-
-            #storyDisplay {
-                width: 80%;
-                font-size: 12px;
-            }
-        }
-    </style>
+/* スマホ向けのスタイル */
+@media (max-width :600px) { 
+#hero ,#boss { width :80px ;} /* キャラクターサイズを小さく */
+#commands { width :90% ;bottom :70px ;} /* コマンドウィンドウを広げる */
+#messages { width :90% ;top :5% ;} /* メッセージウィンドウを広げる */
+#status { font-size :1em ;padding :10px ;} /* ステータス表示を調整 */
+}
+</style>
 </head>
 <body>
-    <div id='titleScreen'>
-        <div id='storyDisplay'>
-            <p id='currentStory'></p>
-            <button id='nextButton' onclick='nextStory()'>次へ</button>
-        </div>
+
+<!-- 戦闘画面 -->
+<div id='battleScreen'>
+    <img src='yumeaimatsuri.png' id='hero' class='character'>
+    <img src='boss.png' id='boss' class='character'>
+    
+    <!-- コマンドウィンドウ -->
+    <div id='commands'>
+        <button onclick='attack()'>たたかう</button>
+        <button onclick='talk()'>はなす</button>
+        <button onclick='castMagic()'>まほう</button>
+        <button onclick='runAway()'>にげる</button>
     </div>
-    <div id='battleScreen'>
-        <img src='yumeaimatsuri.png' id='hero' class='character'>
-        <img src='boss.png' id='boss' class='character'>
-        <div id='commands'>
-            <button onclick='attack()' class='command-button'>たたかう</button>
-            <button onclick='talk()' class='command-button'>はなす</button>
-            <button onclick='castMagic()' class='command-button'>まほう</button>
-            <button onclick='runAway()' class='command-button'>にげる</button>
-        </div>
-        <div id='messages'></div>
-        <div id='status'>
-            MATSURI: HP: <span id='heroHP'>100</span> MP: <span id='heroMP'>50</span>
-        </div>
-        <div id='story'></div>
+
+    <!-- メッセージウィンドウ -->
+    <div id='messages'>
+      UNKNOWNが現れた！
     </div>
-    <div id='clearScreen'>
-        <div id='clearMessage'></div>
-        <div id='clearButtons'>
-            <button onclick='restart()'>もういっかい</button>
-            <button onclick='goToOfficial()'>MATSURIの公式ページ</button>
-        </div>
+
+    <!-- ステータス表示 -->
+    <div id='status'>
+      <p>MATSURI HP:<span id="heroHP">100</span> MP:<span id="heroMP">50</span></p>
+      <p>UNKNOWN HP:<span id="bossHP">200</span></p>
     </div>
-    <script>
-        let heroHP = 100;
-        let heroMP = 50;
-        let bossHP = 200;
-        let bossDamage = 0;
-        let gameState = 'title';
-        let storyIndex = 0;
-        let attackCount = 0;
-        let commandIndex = 0;
+</div>
 
-        const storyParts = [
-            'MATSURIはデジタルワールドの調査員。ある日、怪しい影を追いかけてUNKNOWNを探し始めました。',
-            '彼は未知なる存在に引き寄せられるように、影を追って進みます。',
-            '周囲に不気味な気配が漂っている。MATSURIは注意深く進む。',
-            'UNKNOWNは薄暗い場所から出てきました。彼は恐ろしい目を持ち、MATSURIに向かって近づいてきます。',
-            'MATSURIは彼を追いかけ、ついに真の姿を見せる。',
-        ];
+<script>
+// ゲームロジック
+let heroHP = 100; let heroMP =50; let bossHP =200;
 
-        const vampireStories = [
-            // ブラウザ上で表示する吸血鬼の話
-        ];
+function attack (){ 
+document.getElementById('messages').innerHTML ="MATSURI attacks UNKNOWN!"; 
+bossHP -=20; 
+updateStatus(); 
+}
 
-        function nextStory() {
-            if (storyIndex < storyParts.length) {
-                document.getElementById('currentStory').innerHTML = storyParts[storyIndex];
-                storyIndex++;
-                if (storyIndex === storyParts.length) {
-                    startGame();
-                }
-            }
-        }
+function castMagic (){ 
+if (heroMP >=10){ document.getElementById('messages').innerHTML ="MATSURI casts magic!"; 
+bossHP -=40; 
+heroMP -=10; 
+updateStatus (); 
+}}
 
-        function startGame() {
-            document.getElementById('titleScreen').style.display = 'none';
-            document.getElementById('battleScreen').style.display = 'block';
-            gameState = 'battle';
-            displayStory();
-            updateStatus();
-            updateCommandAvailability();
-            document.querySelectorAll('.character').forEach(character => character.style.display = 'block');
-        }
+function talk (){ document.getElementById('messages').innerHTML ="UNKNOWNは何か言いたそうだ..."; }
 
-        function displayStory() {
-            if (storyIndex < storyParts.length) {
-                document.getElementById('story').innerHTML = storyParts[storyIndex];
-                storyIndex++;
-            }
-            updateCommandAvailability();
-        }
+function runAway (){ document.getElementById('messages').innerHTML ="MATSURIは逃げ出した！"; }
 
-        function updateCommandAvailability() {
-            let commandButtons = document.querySelectorAll('.command-button');
-            if (commandIndex < 5) {
-                commandButtons.forEach(button => {
-                    button.disabled = true;
-                    button.style.opacity = '0.5';
-                });
-                if (commandIndex === 4) {
-                    commandButtons.forEach(button => {
-                        button.disabled = false;
-                        button.style.opacity = '1';
-                    });
-                }
-            }
-            commandIndex++;
-        }
+function updateStatus (){ 
+document.getElementById('heroHP').textContent = heroHP; 
+document.getElementById('heroMP').textContent = heroMP; 
+document.getElementById('bossHP').textContent = bossHP; 
 
-        // 以降の関数は変更なし
+if (bossHP <=0){ document.getElementById('messages').innerHTML ="UNKNOWNは倒れた！"; }
+}
+</script>
 
-        // ...
-    </script>
 </body>
 </html>
