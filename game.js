@@ -1,4 +1,3 @@
-// game.js
 class YumeAiFantasy {
     constructor() {
         this.initializeGame();
@@ -21,7 +20,8 @@ class YumeAiFantasy {
             storyIndex: 0,
             isFinalPhase: false,
             isAnimating: false,
-            darkCommunionUnlocked: false
+            darkCommunionInspired: false,
+            battleCount: 0
         };
 
         this.storySequence = [
@@ -55,20 +55,11 @@ class YumeAiFantasy {
             ]
         };
 
-        this.darkCommunionEvent = {
-            flashback: [
-                "MATSURI: （そういえば、あの時師匠が言っていた...）",
-                "師匠: 黒の聖餐は禁忌の魔法。",
-                "師匠: 使用者の命を代償に、不死の存在に絶大な効果を与える。",
-                "師匠: だが、使えば使用者の魂まで危うくなる。",
-                "師匠: 決して軽々しく使ってはならない。"
-            ],
-            execution: [
-                "MATSURIは禁忌の魔法を思い出した...",
-                "黒き聖餐よ、我が魂を捧げる...",
-                "全てを終わらせる時が来た。"
-            ]
-        };
+        this.darkCommunionEvent = [
+            "MATSURIは禁忌の魔法を思い出した...",
+            "黒き聖餐よ、我が魂を捧げる...",
+            "全てを終わらせる時が来た。"
+        ];
 
         this.battlePhases = {
             normal: { hp: 2000, threshold: 1500 },
@@ -114,27 +105,11 @@ class YumeAiFantasy {
         document.querySelector('#magic').addEventListener('click', () => this.handleMagic());
         document.querySelector('#talk').addEventListener('click', () => this.handleTalk());
         document.querySelector('#escape').addEventListener('click', () => this.handleEscape());
-        document.querySelector('#dark-communion').addEventListener('click', () => this.handleDarkCommunion());
         document.querySelector('#retry').addEventListener('click', () => this.resetGame());
-
-        // タッチデバイス対応
-        this.addTouchEvents();
+        document.querySelector('#retry-gameover').addEventListener('click', () => this.resetGame());
     }
 
-    addTouchEvents() {
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => {
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                button.classList.add('touched');
-            });
-            button.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                button.classList.remove('touched');
-            });
-        });
-    }
-        async startGame() {
+    async startGame() {
         if (this.gameState.currentScene !== 'title') return;
         this.hideElement('title-screen');
         this.showElement('story-screen');
@@ -176,6 +151,7 @@ class YumeAiFantasy {
     async handleAttack() {
         if (this.gameState.isAnimating) return;
         
+        this.gameState.battleCount++;
         this.gameState.isAnimating = true;
         const damage = Math.floor(Math.random() * 20) + 40;
         
@@ -196,77 +172,45 @@ class YumeAiFantasy {
             return;
         }
 
+        this.gameState.battleCount++;
         this.gameState.isAnimating = true;
-        const damage = Math.floor(Math.random() * 200) + 100;
-        this.gameState.matsuri.mp -= 15;
+        let damage;
 
-        await this.showMagicAnimation('matsuri');
+        if (this.gameState.darkCommunionInspired) {
+            damage = this.gameState.unknown.hp;  // 必殺の一撃
+            await this.executeDarkCommunion();
+        } else {
+            damage = Math.floor(Math.random() * 200) + 100;
+            this.gameState.matsuri.mp -= 15;
+            await this.showMagicAnimation('matsuri');
+        }
+
         this.showDamageText(damage);
         await this.applyDamage(damage);
-        await this.showRandomUnknownMessage();
-        
-        this.gameState.isAnimating = false;
-        this.checkBattleStatus();
+
+        if (this.gameState.darkCommunionInspired) {
+            await this.showSpecialEnding();
+        } else {
+            await this.showRandomUnknownMessage();
+            this.gameState.isAnimating = false;
+            this.checkBattleStatus();
+        }
     }
 
     async handleTalk() {
         if (this.gameState.isAnimating) return;
         
+        this.gameState.battleCount++;
         if (this.gameState.isFinalPhase) {
-            await this.showDarkCommunionEvent();
+            await this.showMessage("ただの会話ではこの男を倒せないようだ...");
         } else {
             await this.showRandomUnknownMessage();
         }
+        this.checkBattleStatus();
     }
 
     handleEscape() {
-        this.showBadEnding("MATSURIは吸血鬼にされました");
-    }
-
-    async handleDarkCommunion() {
-        if (!this.gameState.darkCommunionUnlocked || this.gameState.isAnimating) return;
-        
-        this.gameState.isAnimating = true;
-        await this.executeDarkCommunion();
-    }
-
-    async executeDarkCommunion() {
-        const effectLayer = document.querySelector('#dark-communion-effect');
-        effectLayer.classList.remove('hidden');
-
-        for (const text of this.darkCommunionEvent.execution) {
-            await this.showMessage(text);
-            await this.wait(2000);
-        }
-
-        await this.showDarkCommunionAnimation();
-        await this.showTrueEnding();
-    }
-
-    async showDarkCommunionEvent() {
-        this.gameState.isAnimating = true;
-        this.showElement('flashback-screen');
-
-        for (const text of this.darkCommunionEvent.flashback) {
-            await this.typewriterEffect(text);
-            await this.wait(2000);
-        }
-
-        this.hideElement('flashback-screen');
-        this.gameState.darkCommunionUnlocked = true;
-        document.querySelector('#dark-communion').classList.remove('hidden');
-        
-        this.gameState.isAnimating = false;
-    }
-
-    async typewriterEffect(text) {
-        const textElement = document.querySelector('#flashback-text');
-        textElement.textContent = '';
-        
-        for (const char of text) {
-            textElement.textContent += char;
-            await this.wait(50);
-        }
+        this.showGameOver("MATSURIは吸血鬼にされました");
     }
 
     async showAttackAnimation(character) {
@@ -285,14 +229,6 @@ class YumeAiFantasy {
         effectLayer.appendChild(effect);
         await this.wait(1000);
         effect.remove();
-    }
-
-    async showDarkCommunionAnimation() {
-        const battleScreen = document.querySelector('#battle-screen');
-        battleScreen.classList.add('dark-communion');
-        
-        await this.wait(3000);
-        battleScreen.classList.remove('dark-communion');
     }
 
     showDamageText(damage) {
@@ -333,9 +269,17 @@ class YumeAiFantasy {
         return 'normal';
     }
 
-    checkBattleStatus() {
+    async checkBattleStatus() {
+        if (this.gameState.battleCount >= 30) {
+            await this.showMessage("UNKNOWN: もうそろそろお前も疲れただろう");
+            this.showGameOver("疲労により戦闘不能...");
+            return;
+        }
+
         if (this.gameState.unknown.hp <= 300 && !this.gameState.isFinalPhase) {
-            this.executeFinalPhase();
+            await this.executeFinalPhase();
+        } else if (this.gameState.unknown.hp <= 1000 && !this.gameState.darkCommunionInspired) {
+            await this.inspireDarkCommunion();
         }
         this.updateStatus();
     }
@@ -345,47 +289,58 @@ class YumeAiFantasy {
         await this.showMagicAnimation('boss');
         this.gameState.matsuri.hp = 1;
         await this.showMessage("UNKNOWNの最後の攻撃！MATSURIのHPが1になった！");
+        await this.showMessage("ただの攻撃ではこの男を倒せないようだ...");
+        document.querySelector('#attack').disabled = true;
+        document.querySelector('#magic').disabled = true;
     }
 
-    async showTrueEnding() {
-        this.hideElement('battle-screen');
-        this.showElement('ending-screen');
-        
-        const endingTitle = document.querySelector('#ending-title');
-        const endingMessage = document.querySelector('#ending-message');
-        
-        endingTitle.textContent = "GAME CLEAR";
-        
-        const messages = [
-            "吸血鬼の呪いは解かれた...",
-            "だが、新たな謎が待ち受けている。",
-            "MATSURIの旅は、まだ始まったばかりだ。"
-        ];
+    async inspireDarkCommunion() {
+        this.gameState.darkCommunionInspired = true;
+        await this.showMessage("MATSURIは何かを思い出しそうになった...");
+        await this.showMessage("「黒の聖餐」という言葉が頭をよぎる...");
+        document.querySelector('#magic').textContent = "黒の聖餐";
+        document.querySelector('#magic').classList.add('special-skill');
+    }
 
-        for (const message of messages) {
-            endingMessage.textContent = message;
-            await this.wait(2000);
+    async executeDarkCommunion() {
+        for (const text of this.darkCommunionEvent) {
+            await this.showMessage(text);
+            await this.wait(1000);
         }
 
-        this.showElement('ending-choices');
+        const flashLayer = document.querySelector('#flash-layer');
+        flashLayer.classList.remove('hidden');
+        flashLayer.classList.add('flash');
+        await this.showMagicAnimation('matsuri');
+        await this.wait(1000);
+        flashLayer.classList.remove('flash');
+        flashLayer.classList.add('hidden');
     }
 
-    showBadEnding(message) {
+    async showSpecialEnding() {
+        await this.showMessage("黒の聖餐の力が解き放たれた！");
+        await this.showMessage("UNKNOWNの姿が光に包まれていく...");
+        await this.showMessage("UNKNOWN: ありがとう...やっと解放される...");
+        
         this.hideElement('battle-screen');
         this.showElement('ending-screen');
         
-        document.querySelector('#ending-title').textContent = "GAME OVER";
-        document.querySelector('#ending-message').textContent = message;
+        document.querySelector('#ending-title').textContent = "TRUE END";
+        document.querySelector('#ending-message').textContent = 
+            "MATSURIは吸血鬼の呪いを解き、新たな冒険へと旅立つ...";
+        
         this.showElement('ending-choices');
     }
 
-    resetGame() {
-        location.reload();
+    showGameOver(message) {
+        this.hideElement('battle-screen');
+        this.showElement('gameover-screen');
+        document.querySelector('#gameover-message').textContent = message;
     }
 
     showMessage(text) {
         return new Promise(resolve => {
-            const messageWindow = document.querySelector('#message-window');
+            const messageWindow = document.querySelector('#message-text');
             messageWindow.style.opacity = '0';
             
             setTimeout(() => {
@@ -414,19 +369,4 @@ class YumeAiFantasy {
 
         // テキスト更新
         document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
-        document.querySelector('#matsuri-mp').textContent = this.gameState.matsuri.mp;
-        document.querySelector('#unknown-hp').textContent = this.gameState.unknown.hp;
-
-        // バー更新
-        updateBar(this.gameState.matsuri.hp, this.gameState.matsuri.maxHp, 'matsuri-hp-bar');
-        updateBar(this.gameState.matsuri.mp, this.gameState.matsuri.maxMp, 'matsuri-mp-bar');
-        updateBar(this.gameState.unknown.hp, this.gameState.unknown.maxHp, 'unknown-hp-bar');
-    }
-
-    wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-}
-
-// ゲーム開始
-window.onload = () => new YumeAiFantasy();
+        document.querySelector('#matsuri-mp
