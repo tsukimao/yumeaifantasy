@@ -3,57 +3,65 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yume Ai Fantasy</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
         <div id="title-screen">
-            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
-            <div id="start-message">画面をタップしてスタート</div>
+            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル" class="title-image">
+            <div id="start-message">タップしてスタート</div>
         </div>
         
         <div id="story-screen" class="hidden">
             <div id="story-text"></div>
-            <button id="next-button">次へ</button>
+            <button id="next-button" class="game-button">次へ</button>
         </div>
         
         <div id="battle-screen" class="hidden">
             <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
             <div id="characters">
-                <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" id="matsuri">
-                <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" id="unknown">
+                <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" id="matsuri" class="character">
+                <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" id="unknown" class="character">
             </div>
             <div id="effect-layer"></div>
             <div id="message-window"></div>
             <div id="status-window">
-                <div id="matsuri-status">
-                    <div>MATSURI</div>
-                    <div>HP: <span id="matsuri-hp">1000</span></div>
-                    <div>MP: <span id="matsuri-mp">100</span></div>
+                <div class="status-item">
+                    <div class="status-name">MATSURI</div>
+                    <div class="status-values">
+                        <div>HP: <span id="matsuri-hp">1000</span></div>
+                        <div>MP: <span id="matsuri-mp">100</span></div>
+                    </div>
                 </div>
-                <div id="unknown-status">
-                    <div>UNKNOWN</div>
-                    <div>HP: <span id="unknown-hp">2000</span></div>
+                <div class="status-item">
+                    <div class="status-name">UNKNOWN</div>
+                    <div class="status-values">
+                        <div>HP: <span id="unknown-hp">2000</span></div>
+                    </div>
                 </div>
             </div>
             <div id="command-window">
-                <button id="attack">たたかう</button>
-                <button id="magic">まほう</button>
-                <button id="talk">はなす</button>
-                <button id="escape">にげる</button>
+                <button id="attack" class="command-button">たたかう</button>
+                <button id="magic" class="command-button">まほう</button>
+                <button id="talk" class="command-button">はなす</button>
+                <button id="escape" class="command-button">にげる</button>
             </div>
         </div>
         
         <div id="ending-screen" class="hidden">
             <div id="ending-message"></div>
             <div id="ending-choices">
-                <button id="retry">もういっかい</button>
+                <button id="retry" class="game-button">もういっかい</button>
                 <a href="https://reverieneon71.my.canva.site/" target="_blank">
-                    <button>MATSURIの公式ページ</button>
+                    <button class="game-button">MATSURIの公式ページ</button>
                 </a>
             </div>
+        </div>
+        <div id="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading...</div>
         </div>
     </div>
     <script src="game.js"></script>
