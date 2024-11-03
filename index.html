@@ -5,13 +5,17 @@
     <title>Yume Ai Fantasy</title>
     <style>
         body {
-            background: url('https://tsukimao.github.io/yumeaifantasy/BG.png') no-repeat center center fixed;
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
+            background: url('https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif') no-repeat center center fixed;
+            -webkit-background-size: contain;
+            -moz-background-size: contain;
+            -o-background-size: contain;
+            background-size: contain;
+            /* タイトル画面がスクロールされないように */
             overflow: hidden;
+            margin: 0;
+            padding: 0;
         }
+
         #titleScreen {
             display: flex;
             justify-content: center;
@@ -23,37 +27,55 @@
             height: 100%;
             z-index: 1000;
         }
+
         #titleScreen img {
-            max-width: 100%;
-            max-height: 100%;
+            height: 100vh; /* タイトルの高さを画面の高さに合わせる */
+            object-fit: contain; /* 画像をそのまま表示 */
         }
+
         #battleScreen {
             display: none;
-            position: relative;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            max-width: 500px;
+            height: 100vh;
+            background: url('https://tsukimao.github.io/yumeaifantasy/BG.png') no-repeat center center fixed;
+            background-size: cover;
         }
+
         .character {
             position: absolute;
             width: 100px;
             height: auto;
         }
+
         #hero {
             left: 50%;
             transform: translateX(-50%);
             bottom: 100px;
         }
+
         #boss {
-            left: 0;
+            left: 50px;
             bottom: 100px;
         }
+
         #commands {
             position: fixed;
-            bottom: 10px;
-            left: 10px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
         }
+
         #messages {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 300px;
             height: 100px;
             background: rgba(0, 0, 0, 0.5);
@@ -61,9 +83,10 @@
             padding: 10px;
             overflow-y: auto;
         }
+
         #status {
             position: fixed;
-            bottom: 0;
+            bottom: 10px;
             left: 0;
             width: 100%;
             text-align: center;
@@ -71,10 +94,12 @@
             color: white;
             background: rgba(0, 0, 0, 0.5);
         }
+
         #story {
             position: fixed;
             top: 10px;
-            left: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             width: 300px;
             height: auto;
             max-height: 150px;
