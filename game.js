@@ -149,7 +149,16 @@ class YumeAiFantasy {
             img.onerror = () => {
                 loadedAssets++;
                 console.error(`Failed to load: ${asset} (${loadedAssets}/${totalAssets})`);
-                if (loadedAssets === totalAs
+                if (loadedAssets === totalAssets) {
+                    this.hideElement('loading-screen');
+                    this.showElement('title-screen');
+                    this.gameState.currentScene = 'title';
+                }
+            };
+
+            img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
+        });
+    }
 
     async handleAttack() {
         if (this.gameState.isAnimating) return;
