@@ -3,12 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <title>Yume Ai Fantasy</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        #titleScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: url('YUMEAIFANTASY.title.gif') no-repeat center center fixed;
+            background-size: contain;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        #titleScreen img {
+            display: none;
+        }
+
+        #battleScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .character {
+            display: none;
+            position: absolute;
+            width: 100px;
+            height: auto;
+            bottom: 100px;
+        }
+
+        #hero {
+            right: 10px;
+        }
+
+        #boss {
+            left: 10px;
+        }
+
+        #commands {
+            position: fixed;
+            left: 0;
+            bottom: 10px;
+            width: 30%;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        #messages {
+            position: fixed;
+            right: 0;
+            bottom: 10px;
+            width: 70%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 16px;
+        }
+
+        #status {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        #story {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: auto;
+            max-height: 150px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+
+        @keyframes flash-animation {
+            0% { background-color: white; }
+            100% { background-color: transparent; }
+        }
+
+        .flash-effect {
+            animation: flash-animation 0.5s ease-in-out;
+        }
+
+        #clearScreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: url('YUMEAIFANTASY.title.gif') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #clearMessage {
+            font-size: 2em;
+            text-align: center;
+            padding: 20px;
+            animation: text-flicker 0.5s infinite alternate;
+        }
+
+        @keyframes text-flicker {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 600px) {  /* スマホ向けにスタイルを調整 */
+            .character {
+                width: 60px;
+            }
+
+            #commands {
+                width: 100%;
+                bottom: 70px;
+            }
+
+            #messages {
+                width: 100%;
+                bottom: 20px;
+            }
+
+            #status {
+                font-size: 16px;
+            }
+
+            #story {
+                width: 80%;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id='titleScreen' onclick='startGame()'>
-        <img src='YUMEAIFANTASY.title.gif' alt='タイトル画面'>
-    </div>
+    <div id='titleScreen' onclick='startGame()'></div>
     <div id='battleScreen'>
         <img src='yumeaimatsuri.png' id='hero' class='character'>
         <img src='boss.png' id='boss' class='character'>
@@ -27,6 +192,146 @@
     <div id='clearScreen'>
         <div id='clearMessage'></div>
     </div>
-    <script src="main.js"></script>
+    <script>
+        let heroHP = 100;
+        let heroMP = 50;
+        let bossHP = 200;
+        let bossDamage = 0;
+        let gameState = 'title';
+        let storyIndex = 0;
+        let attackCount = 0;
+        let commandIndex = 0;
+
+        const storyParts = [
+            // ストーリーパーツ
+        ];
+
+        const vampireStories = [
+            // ブラウザ上で表示する吸血鬼の話
+        ];
+
+        function startGame() {
+            document.getElementById('titleScreen').style.display = 'none';
+            document.getElementById('battleScreen').style.display = 'block';
+            gameState = 'battle';
+            displayStory();
+            updateStatus();
+            updateCommandAvailability();
+            document.querySelectorAll('.character').forEach(character => character.style.display = 'block');
+        }
+
+        function displayStory() {
+            if (storyIndex < storyParts.length) {
+                document.getElementById('story').innerHTML = storyParts[storyIndex];
+                storyIndex++;
+            }
+            updateCommandAvailability();
+        }
+
+        function updateCommandAvailability() {
+            let commandButtons = document.querySelectorAll('.command-button');
+            if (commandIndex < 5) {
+                commandButtons.forEach(button => {
+                    button.disabled = true;
+                    button.style.opacity = '0.5';
+                });
+                if (commandIndex === 4) {
+                    commandButtons.forEach(button => {
+                        button.disabled = false;
+                        button.style.opacity = '1';
+                    });
+                }
+            }
+            commandIndex++;
+        }
+
+        function attack() {
+            if (gameState === 'battle' && commandIndex >= 5) {
+                document.getElementById('messages').innerHTML = 'MATSURI attacks UNKNOWN!<br>';
+                bossHP -= 20;
+                bossDamage += 20;
+                attackCount++;
+                if (bossDamage >= 100) {
+                    endGame();
+                } else {
+                    let randomIndex = Math.floor(Math.random() * vampireStories.length);
+                    document.getElementById('messages').innerHTML += vampireStories[randomIndex] + '<br>';
+                    displayStory();
+                    bossAttack();
+                }
+                addFlashEffect();
+                updateStatus();
+            }
+        }
+
+        function castMagic() {
+            if (gameState === 'battle' && heroMP >= 10 && commandIndex >= 5) {
+                document.getElementById('messages').innerHTML = 'MATSURI casts magic!<br>';
+                bossHP -= 40;
+                bossDamage += 40;
+                heroMP -= 10;
+                if (bossDamage >= 100) {
+                    endGame();
+                } else {
+                    let randomIndex = Math.floor(Math.random() * vampireStories.length);
+                    document.getElementById('messages').innerHTML += vampireStories[randomIndex] + '<br>';
+                    displayStory();
+                    bossAttack();
+                }
+                addFlashEffect();
+                updateStatus();
+            }
+        }
+
+        function talk() {
+            if (gameState === 'battle' && commandIndex >= 5) {
+                let randomIndex = Math.floor(Math.random() * vampireStories.length);
+                document.getElementById('messages').innerHTML = vampireStories[randomIndex] + '<br>';
+                displayStory();
+            }
+        }
+
+        function runAway() {
+            if (gameState === 'battle' && commandIndex >= 5) {
+                document.getElementById('messages').innerHTML = 'MATSURI runs away!<br>';
+                endGame();
+            }
+        }
+
+        function updateStatus() {
+            document.getElementById('heroHP').textContent = heroHP;
+            document.getElementById('heroMP').textContent = heroMP;
+        }
+
+        function bossAttack() {
+            if (gameState === 'battle') {
+                document.getElementById('messages').innerHTML += 'UNKNOWN tries to suck MATSURI\'s blood!<br>';
+                heroHP -= Math.floor(Math.random() * 20);
+                if (heroHP <= 1) {
+                    endGame();
+                }
+                updateStatus();
+            }
+        }
+
+        function endGame() {
+            gameState = 'end';
+            displayStory();
+            document.getElementById('battleScreen').style.display = 'none';
+            document.getElementById('clearScreen').style.display = 'flex';
+            document.getElementById('clearMessage').innerHTML = createClearScreen();
+        }
+
+        function addFlashEffect() {
+            document.body.classList.add('flash-effect');
+            setTimeout(() => {
+                document.body.classList.remove('flash-effect');
+            }, 500);
+        }
+
+        function createClearScreen() {
+            return 'ゲームクリア！🎉\n\n最終的にMATSURIはUNKNOWNを追い詰め、彼の邪悪な計画を阻止しました！\n仲間たちの元へ帰ることができたMATSURIは、再び平和な世界を取り戻しました。\nこの冒険を通じて、MATSURIは多くのことを学ぶことができました。';
+        }
+    </script>
 </body>
 </html>
