@@ -1,59 +1,41 @@
 // game.js
-document.addEventListener('DOMContentLoaded', function() {
-    // デバッグ用のログ
-    console.log('Game starting...');
+window.onload = function() {
+    // デバッグ用
+    console.log('Game loaded');
 
-    // 画面要素の取得
-    const titleScreen = document.getElementById('title-screen');
-    const storyScreen = document.getElementById('story-screen');
-    const storyText = document.getElementById('story-text');
-    const nextButton = document.getElementById('next-button');
-
-    // ストーリーの設定
-    let currentStoryIndex = 0;
-    const storySequence = [
-        "MATSURIは男を追い詰めた",
-        "UNKNOWN: 『私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。』",
-        "UNKNOWN: 『伝説では、吸血鬼は十字架や聖水に弱いとされている。しかし、それは迷信だ。』",
-        "UNKNOWN: 『私は何百年も生きてきた。だが、その長い年月は孤独と寂寥に満ちていた。』",
-        "UNKNOWN: 『吸血鬼は永遠の命を持つ。だが、その代償として愛する者への苦しみを知る。』",
-        "MATSURIは危険を感じた。この男は一体。",
-        "戦闘を開始します。"
-    ];
-
-    // タイトル画面のクリックイベント
+    // タイトル画面の処理
+    var titleScreen = document.getElementById('title-screen');
     titleScreen.onclick = function() {
         console.log('Title clicked');
+        alert('Title clicked'); // クリックの確認用
         titleScreen.style.display = 'none';
-        storyScreen.style.display = 'block';
-        updateStoryText();
+        document.getElementById('story-screen').style.display = 'block';
     };
 
-    // Nextボタンのクリックイベント
+    // ストーリー画面の処理
+    var nextButton = document.getElementById('next-button');
+    var storyText = document.getElementById('story-text');
+    var currentIndex = 0;
+    
+    var stories = [
+        "MATSURIは男を追い詰めた",
+        "UNKNOWN: 『私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。』",
+        "UNKNOWN: 『伝説では、吸血鬼は十字架や聖水に弱いとされている。しかし、それは迷信だ。』"
+    ];
+
+    // 最初のストーリーを表示
+    storyText.textContent = stories[0];
+
+    // Nextボタンの処理
     nextButton.onclick = function() {
         console.log('Next clicked');
-        currentStoryIndex++;
-        if (currentStoryIndex < storySequence.length) {
-            updateStoryText();
-        } else {
-            startBattle();
+        alert('Next clicked'); // クリックの確認用
+        currentIndex++;
+        if (currentIndex < stories.length) {
+            storyText.textContent = stories[currentIndex];
         }
     };
 
-    // ストーリーテキストの更新
-    function updateStoryText() {
-        console.log('Updating story:', currentStoryIndex);
-        storyText.textContent = storySequence[currentStoryIndex];
-    }
-
-    // 戦闘画面への移行
-    function startBattle() {
-        console.log('Starting battle');
-        storyScreen.style.display = 'none';
-        document.getElementById('battle-screen').style.display = 'block';
-    }
-
-    // 初期状態の設定
-    storyScreen.style.display = 'none';
-    document.getElementById('battle-screen').style.display = 'none';
-});
+    // 初期表示設定
+    document.getElementById('story-screen').style.display = 'none';
+};
