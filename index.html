@@ -5,15 +5,9 @@
     <title>Yume Ai Fantasy</title>
     <style>
         body {
-            background: url('https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif') no-repeat center center fixed;
-            -webkit-background-size: contain;
-            -moz-background-size: contain;
-            -o-background-size: contain;
-            background-size: contain;
-            /* タイトル画面がスクロールされないように */
-            overflow: hidden;
             margin: 0;
             padding: 0;
+            overflow: hidden;
         }
 
         #titleScreen {
@@ -26,58 +20,60 @@
             width: 100%;
             height: 100%;
             z-index: 1000;
+            background: url('https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif') no-repeat center center fixed;
+            -webkit-background-size: contain;
+            -moz-background-size: contain;
+            -o-background-size: contain;
+            background-size: contain;
         }
 
         #titleScreen img {
-            height: 100vh; /* タイトルの高さを画面の高さに合わせる */
-            object-fit: contain; /* 画像をそのまま表示 */
+            display: none;
         }
 
         #battleScreen {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
             width: 100%;
-            max-width: 500px;
             height: 100vh;
-            background: url('https://tsukimao.github.io/yumeaifantasy/BG.png') no-repeat center center fixed;
-            background-size: cover;
+            overflow: hidden;
         }
 
         .character {
             position: absolute;
             width: 100px;
             height: auto;
+            bottom: 100px;
         }
 
         #hero {
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 100px;
+            right: 10px;
         }
 
         #boss {
-            left: 50px;
-            bottom: 100px;
+            left: 10px;
         }
 
         #commands {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
+            left: 0;
+            bottom: 10px;
+            width: 30%;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
         }
 
         #messages {
             position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 100px;
+            right: 0;
+            bottom: 10px;
+            width: 70%;
+            height: 150px;
             background: rgba(0, 0, 0, 0.5);
             color: white;
             padding: 10px;
@@ -86,7 +82,7 @@
 
         #status {
             position: fixed;
-            bottom: 10px;
+            bottom: 0;
             left: 0;
             width: 100%;
             text-align: center;
@@ -108,12 +104,19 @@
             padding: 10px;
             overflow-y: auto;
         }
+
+        @keyframes flash-animation {
+            0% { background-color: white; }
+            100% { background-color: transparent; }
+        }
+
+        .flash-effect {
+            animation: flash-animation 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
-    <div id='titleScreen'>
-        <img src='https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif' onclick='startGame()' />
-    </div>
+    <div id='titleScreen' onclick='startGame()'></div>
     <div id='battleScreen'>
         <img src='https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png' id='hero' class='character'>
         <img src='https://tsukimao.github.io/yumeaifantasy/boss.png' id='boss' class='character'>
@@ -194,6 +197,7 @@
                     displayStory();
                     bossAttack();
                 }
+                addFlashEffect();
                 updateStatus();
             }
         }
@@ -212,6 +216,7 @@
                     displayStory();
                     bossAttack();
                 }
+                addFlashEffect();
                 updateStatus();
             }
         }
@@ -254,6 +259,13 @@
             document.body.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
             document.getElementById('story').innerHTML = 'ゲームクリア';
             document.getElementById('story').style.fontSize = '3em';
+        }
+
+        function addFlashEffect() {
+            document.body.classList.add('flash-effect');
+            setTimeout(() => {
+                document.body.classList.remove('flash-effect');
+            }, 500);
         }
     </script>
 </body>
