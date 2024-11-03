@@ -2,11 +2,16 @@
 :root {
     --main-bg-color: #000;
     --text-color: #fff;
+    --accent-color: #ff0066;
+    --glow-color: rgba(255, 0, 102, 0.5);
     --button-bg: rgba(0, 0, 0, 0.8);
-    --button-border: #fff;
-    --window-bg: rgba(0, 0, 0, 0.8);
+    --window-bg: rgba(0, 0, 0, 0.85);
+    --hp-color: #ff3333;
+    --mp-color: #3333ff;
+    --bar-bg: rgba(255, 255, 255, 0.2);
 }
 
+/* 基本スタイル */
 * {
     margin: 0;
     padding: 0;
@@ -15,15 +20,13 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
     background: var(--main-bg-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    font-family: 'Arial', sans-serif;
-    color: var(--text-color);
     overflow: hidden;
 }
 
@@ -34,11 +37,34 @@ body {
     max-height: 600px;
     position: relative;
     overflow: hidden;
-    background: var(--main-bg-color);
 }
 
 .hidden {
     display: none !important;
+}
+
+/* ローディング画面 */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--main-bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
 }
 
 /* タイトル画面 */
@@ -63,6 +89,43 @@ body {
     animation: blink 1s infinite;
 }
 
+/* ストーリー画面 */
+#story-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--main-bg-color);
+}
+
+#story-container {
+    width: 80%;
+    text-align: center;
+}
+
+#story-text {
+    font-size: clamp(16px, 3vw, 20px);
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* 回想シーン */
+#flashback-screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 100;
+}
+
+.flashback-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 0%, rgba(0,0,0,0.8) 100%);
+}
+
 /* 戦闘画面 */
 #battle-screen {
     position: relative;
@@ -70,13 +133,19 @@ body {
     height: 100%;
 }
 
-.background {
+.battle-background {
     position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.background {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+/* キャラクター */
 #characters {
     position: absolute;
     width: 100%;
@@ -84,21 +153,24 @@ body {
     pointer-events: none;
 }
 
-.character {
+.character-container {
     position: absolute;
-    height: 30vh;
-    max-height: 200px;
-    transition: transform 0.3s ease;
+    height: 40%;
+    bottom: 25%;
+    transition: all 0.3s ease;
 }
 
-#matsuri {
+#matsuri-container {
     right: 10%;
-    bottom: 25%;
 }
 
-#unknown {
+#unknown-container {
     left: 10%;
-    bottom: 25%;
+}
+
+.character {
+    height: 100%;
+    object-fit: contain;
 }
 
 /* メッセージウィンドウ */
@@ -110,7 +182,7 @@ body {
     width: 90%;
     max-width: 600px;
     background: var(--window-bg);
-    border: 2px solid var(--button-border);
+    border: 2px solid var(--text-color);
     padding: 15px;
     border-radius: 5px;
     font-size: clamp(14px, 3vw, 18px);
@@ -123,10 +195,9 @@ body {
     bottom: 20%;
     right: 5%;
     background: var(--window-bg);
-    border: 2px solid var(--button-border);
+    border: 2px solid var(--text-color);
     padding: 10px;
     border-radius: 5px;
-    font-size: clamp(12px, 2.5vw, 16px);
     z-index: 10;
 }
 
@@ -137,6 +208,35 @@ body {
 .status-name {
     font-weight: bold;
     margin-bottom: 5px;
+}
+
+.bar-container {
+    width: 150px;
+    height: 15px;
+    background: var(--bar-bg);
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bar-fill {
+    height: 100%;
+    width: 100%;
+    transition: width 0.3s ease;
+}
+
+#matsuri-hp-bar { background: var(--hp-color); }
+#matsuri-mp-bar { background: var(--mp-color); }
+#unknown-hp-bar { background: var(--hp-color); }
+
+.bar-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    line-height: 15px;
+    color: var(--text-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 /* コマンドウィンドウ */
@@ -154,88 +254,98 @@ body {
     width: clamp(100px, 20vw, 150px);
     height: clamp(35px, 8vh, 50px);
     background: var(--button-bg);
-    border: 2px solid var(--button-border);
+    border: 2px solid var(--text-color);
     color: var(--text-color);
     font-size: clamp(14px, 3vw, 18px);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.command-button:active {
-    transform: scale(0.95);
+.command-button:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.special-skill {
+    grid-column: span 2;
+    background: rgba(128, 0, 128, 0.6);
+    border-color: #ff00ff;
+    animation: glowPulse 2s infinite;
+}
+
+/* エンディング画面 */
+#ending-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ending-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.9) 100%);
+}
+
+.ending-container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
 }
 
 /* エフェクト */
-.damage-text {
-    position: absolute;
-    color: #ff0000;
-    font-size: clamp(20px, 5vw, 32px);
-    font-weight: bold;
-    animation: floatUp 1s forwards;
-    z-index: 102;
+.magical-text {
+    font-size: 48px;
+    background: linear-gradient(45deg, #ff0066, #ff99cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: glow 2s ease-in-out infinite;
+}
+
+.glow-text {
+    text-shadow: 0 0 10px var(--glow-color),
+                 0 0 20px var(--glow-color),
+                 0 0 30px var(--glow-color);
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
 }
 
 /* アニメーション */
-@keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@keyframes floatUp {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-}
-
-/* ローディング画面 */
-#loading-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--main-bg-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-.loading-text {
-    margin-top: 20px;
-    font-size: 18px;
-    color: var(--text-color);
-}
-
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-/* メディアクエリ */
-@media (max-width: 480px) {
-    #game-container {
-        width: 100vw;
-        height: 100vh;
-    }
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 5px #ff00ff; }
+    50% { box-shadow: 0 0 20px #ff00ff; }
+}
+
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 10px var(--glow-color); }
+    50% { text-shadow: 0 0 20px var(--glow-color),
+                       0 0 30px var(--glow-color),
+                       0 0 40px var(--glow-color); }
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 480px) {
     .command-button {
         font-size: 16px;
         padding: 8px;
@@ -249,10 +359,14 @@ body {
     #status-window {
         font-size: 12px;
     }
+
+    .bar-container {
+        width: 120px;
+    }
 }
 
 @media (orientation: landscape) and (max-height: 500px) {
-    .character {
+    .character-container {
         height: 40vh;
     }
 
