@@ -2,41 +2,130 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yume Ai Fantasy</title>
     <style>
         body {
+            margin: 0;
+            padding: 0;
             background: black;
             color: white;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .hidden {
+            display: none !important;
         }
         #title-screen {
+            text-align: center;
             cursor: pointer;
         }
-        #next-button {
-            padding: 10px 20px;
+        #title-screen img {
+            max-width: 100%;
+            height: auto;
+        }
+        #start-message {
             margin-top: 20px;
-            cursor: pointer;
+            font-size: 24px;
+            animation: blink 1s infinite;
+        }
+        #story-screen {
+            padding: 20px;
+            text-align: center;
         }
         #story-text {
-            margin: 20px;
             font-size: 18px;
+            margin: 20px;
+            transition: opacity 0.3s;
+        }
+        #next-button {
+            padding: 10px 30px;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        #next-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
     </style>
 </head>
 <body>
-    <div id="title-screen">
-        <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
-        <div>Touch to Start</div>
-    </div>
+    <div id="game-container">
+        <!-- タイトル画面 -->
+        <div id="title-screen">
+            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
+            <div id="start-message">Touch to Start</div>
+        </div>
 
-    <div id="story-screen">
-        <div id="story-text"></div>
-        <button id="next-button">Next</button>
-    </div>
+        <!-- ストーリー画面 -->
+        <div id="story-screen" class="hidden">
+            <div id="story-text"></div>
+            <button id="next-button">Next</button>
+        </div>
 
+        <!-- 戦闘画面 -->
+        <div id="battle-screen" class="hidden">
+            <div class="battle-background">
+                <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
+            </div>
+            
+            <!-- キャラクター -->
+            <div id="characters">
+                <div id="matsuri-container" class="character-container">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" id="matsuri">
+                    <div class="status-bars">
+                        <div class="hp-bar">
+                            <div class="bar-fill" id="matsuri-hp-bar"></div>
+                            <div class="bar-text">HP: <span id="matsuri-hp">1000</span>/1000</div>
+                        </div>
+                        <div class="mp-bar">
+                            <div class="bar-fill" id="matsuri-mp-bar"></div>
+                            <div class="bar-text">MP: <span id="matsuri-mp">100</span>/100</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="unknown-container" class="character-container">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" id="unknown">
+                </div>
+            </div>
+
+            <!-- メッセージウィンドウ -->
+            <div id="message-window">
+                <div id="message-text"></div>
+            </div>
+
+            <!-- コマンドウィンドウ -->
+            <div id="command-window">
+                <button id="attack" class="command-button">たたかう</button>
+                <button id="magic" class="command-button">まほう</button>
+                <button id="talk" class="command-button">はなす</button>
+                <button id="escape" class="command-button">にげる</button>
+            </div>
+        </div>
+
+        <!-- エンディング画面 -->
+        <div id="ending-screen" class="hidden">
+            <div id="ending-message"></div>
+            <button id="retry" class="command-button">もういちど</button>
+        </div>
+    </div>
     <script src="game.js"></script>
 </body>
 </html>
