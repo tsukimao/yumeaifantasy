@@ -111,6 +111,14 @@ class YumeAiFantasy {
     }
 
     preloadAssets() {
+        // デバッグ用のタイムアウト設定
+        setTimeout(() => {
+            console.log("Timeout triggered - forcing start");
+            this.hideElement('loading-screen');
+            this.showElement('title-screen');
+            this.gameState.currentScene = 'title';
+        }, 2000);  // 2秒後に強制的に進める
+
         const assets = [
             'BG.png',
             'YUMEAIFANTASY.title.gif',
@@ -123,30 +131,25 @@ class YumeAiFantasy {
         let loadedAssets = 0;
         const totalAssets = assets.length;
 
-        const onLoadComplete = () => {
-            loadedAssets++;
-            if (loadedAssets === totalAssets) {
-                this.hideElement('loading-screen');
-                this.showElement('title-screen');
-                this.gameState.currentScene = 'title';
-            }
-        };
-
         assets.forEach(asset => {
             const img = new Image();
-            img.onload = onLoadComplete;
-            img.onerror = onLoadComplete;
-            img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
-        });
+            
+            // 読み込み成功時の処理
+            img.onload = () => {
+                loadedAssets++;
+                console.log(`Loaded: ${asset} (${loadedAssets}/${totalAssets})`);
+                if (loadedAssets === totalAssets) {
+                    this.hideElement('loading-screen');
+                    this.showElement('title-screen');
+                    this.gameState.currentScene = 'title';
+                }
+            };
 
-        setTimeout(() => {
-            if (this.gameState.currentScene === 'loading') {
-                this.hideElement('loading-screen');
-                this.showElement('title-screen');
-                this.gameState.currentScene = 'title';
-            }
-        }, 5000);
-    }
+            // エラー時の処理を追加
+            img.onerror = () => {
+                loadedAssets++;
+                console.error(`Failed to load: ${asset} (${loadedAssets}/${totalAssets})`);
+                if (loadedAssets === totalAs
 
     async handleAttack() {
         if (this.gameState.isAnimating) return;
