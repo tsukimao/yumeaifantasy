@@ -42,6 +42,58 @@ body {
     display: none !important;
 }
 
+/* ローディング画面 */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--main-bg-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: 20px;
+    font-size: 24px;
+}
+
+/* タイトル画面 */
+#title-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.title-image {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+#start-message {
+    margin-top: 20px;
+    font-size: clamp(16px, 4vw, 24px);
+    animation: blink 1s infinite;
+}
+
 /* メッセージボックス共通スタイル */
 .message-box {
     background: var(--window-bg);
@@ -62,7 +114,27 @@ body {
     text-align: center;
 }
 
-/* キャラクターコンテナ */
+/* 戦闘画面 */
+.battle-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* キャラクター */
+#characters {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
 .character-container {
     position: absolute;
     bottom: 20%;
@@ -71,12 +143,12 @@ body {
 
 .matsuri {
     right: 10%;
-    width: 20%; /* MATSURIを小さく */
+    width: 20%;
 }
 
 .unknown {
     left: 10%;
-    width: 40%; /* UNKNOWNを大きく */
+    width: 40%;
 }
 
 .character {
@@ -167,6 +239,14 @@ body {
 }
 
 /* エフェクト */
+#effect-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
 #flash-layer {
     position: absolute;
     top: 0;
@@ -215,6 +295,16 @@ body {
 }
 
 /* アニメーション */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 @keyframes flash {
     0%, 100% { opacity: 0; }
     50% { opacity: 1; }
