@@ -1,173 +1,173 @@
-let heroHP = 100;
-let heroMP = 50;
-let bossHP = 200;
-let bossDamage = 0;
-let gameState = 'title';
-let storyIndex = 0;
-let attackCount = 0;
-let commandIndex = 0;
-
-const storyParts = [
-    "MATSURIはデジタルワールドの調査員。ある日、怪しい影を追いかけてUNKNOWNを探し始めました。",
-    "彼は未知なる存在に引き寄せられるように、影を追って進みます。",
-    "周囲に不気味な気配が漂っている。MATSURIは注意深く進む。",
-    "UNKNOWNは薄暗い場所から出てきました。彼は恐ろしい目を持ち、MATSURIに向かって近づいてきます。",
-    "MATSURIは彼を追いかけ、ついに真の姿を見せる。",
-    "UNKNOWNは、人間の血を吸い、ゾンビに変えると噂される化け物です。",
-    "最初は攻撃してきませんが、余裕を見せています。",
-    "MATSURIは戦うか、話すか、魔法を使うか、逃げるかを賢く選ばなければなりません。",
-    "MATSURIが戦うと、UNKNOWNの暗い過去と吸血鬼の話を聞かされます。",
-    "UNKNOWN: 『私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。』",
-    "UNKNOWN: 『伝説では、吸血鬼は十字架や聖水に弱いとされている。しかし、それは迷信だ。』",
-    "UNKNOWN: 『私は何百年も生きてきた。だが、その長い年月は孤独と寂寥に満ちていた。』",
-    "MATSURIがダメージを与えると、UNKNOWNは嘘の吸血鬼話でMATSURIの血を吸おうとしてきます。",
-    "UNKNOWN: 『吸血鬼は永遠の命を持つ。だが、その代償として愛する者への苦しみを知る。』",
-    "MATSURIが吸血鬼の弱点を見出し、最後のコマンド選択で攻撃しようとしたところ、UNKNOWNは逃げました。"
-];
-
-const vampireStories = [
-    // ブラウザ上で表示する吸血鬼の話
-];
-
-function startGame() {
-    document.getElementById('titleScreen').style.display = 'none';
-    document.getElementById('battleScreen').style.display = 'block';
-    gameState = 'battle';
-    displayStory();
-    updateStatus();
-    updateCommandAvailability();
-    document.querySelectorAll('.character').forEach(character => character.style.display = 'block');
-}
-
-function displayStory() {
-    if (storyIndex < storyParts.length) {
-        document.getElementById('story').innerHTML = storyParts[storyIndex];
-        storyIndex++;
+// game.js
+class YumeAiFantasy {
+    constructor() {
+        this.initializeGame();
+        this.bindEvents();
+        this.preloadAssets();
     }
-    updateCommandAvailability();
-}
 
-function updateCommandAvailability() {
-    let commandButtons = document.querySelectorAll('.command-button');
-    if (commandIndex < 5) {
-        commandButtons.forEach(button => {
-            button.disabled = true;
-            button.style.opacity = '0.5';
+    initializeGame() {
+        this.gameState = {
+            matsuri: {
+                hp: 1000,
+                mp: 100,
+                name: "MATSURI"
+            },
+            unknown: {
+                hp: 2000,
+                name: "UNKNOWN"
+            },
+            currentScene: 'title',
+            storyIndex: 0,
+            isFinalPhase: false,
+            isAnimating: false
+        };
+
+        this.unknownMessages = [
+            "吸血鬼は人間の血を吸い、永遠の命を手に入れる。",
+            "私はかつて美しい花嫁だった。だが、運命は私を吸血鬼へと変えた。",
+            "吸血鬼は月明かりを避ける。太陽は私たちの敵だ。",
+            "吸血鬼は人間の心を操り、恐怖を植え付ける。",
+            "吸血鬼は一度死んだ者たち。だが、私はその中でも最も恐ろしい。",
+            "私は何百年も生きてきた。だが、その長い年月は孤独と寂寥に満ちていた。",
+            "吸血鬼は人間をゾンビに変えると噂される。だが、それは嘘だ。",
+            "昔、吸血鬼は一族を形成し、世界を支配していた。",
+            "吸血鬼は夜に活動する。だが、私は日中でも活動できる。",
+            "私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。"
+        ];
+
+        this.storySequence = [
+            "MATSURIは男を追い詰めた",
+            "UNKNOWN: 『私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。』",
+            "UNKNOWN: 『伝説では、吸血鬼は十字架や聖水に弱いとされている。しかし、それは迷信だ。』",
+            "UNKNOWN: 『私は何百年も生きてきた。だが、その長い年月は孤独と寂寥に満ちていた。』",
+            "UNKNOWN: 『吸血鬼は永遠の命を持つ。だが、その代償として愛する者への苦しみを知る。』",
+            "MATSURIは危険を感じた。この男は一体。",
+            "戦闘を開始します。"
+        ];
+    }
+
+    preloadAssets() {
+        const assets = [
+            'BG.png',
+            'YUMEAIFANTASY.title.gif',
+            'boss.mahou.gif',
+            'boss.png',
+            'matsuri.mahou.gif',
+            'yumeaimatsuri.png'
+        ];
+
+        assets.forEach(asset => {
+            const img = new Image();
+            img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
         });
-        if (commandIndex === 4) {
-            commandButtons.forEach(button => {
-                button.disabled = false;
-                button.style.opacity = '1';
-            });
-        }
     }
-    commandIndex++;
-}
 
-function attack() {
-    if (gameState === 'battle' && commandIndex >= 5) {
-        document.getElementById('messages').innerHTML = 'MATSURI attacks UNKNOWN!<br>';
-        bossHP -= 20;
-        bossDamage += 20;
-        attackCount++;
-        if (bossDamage >= 100) {
-            endGame();
+    showEffect(type) {
+        const effectLayer = document.querySelector('#effect-layer');
+        const effect = document.createElement('img');
+        effect.src = type === 'matsuri' ? 
+            'https://tsukimao.github.io/yumeaifantasy/matsuri.mahou.gif' :
+            'https://tsukimao.github.io/yumeaifantasy/boss.mahou.gif';
+        
+        effect.style.position = 'absolute';
+        effect.style.width = '100%';
+        effect.style.height = '100%';
+        
+        effectLayer.appendChild(effect);
+        
+        setTimeout(() => {
+            effect.remove();
+        }, 1000);
+    }
+
+    handleAttack() {
+        if (this.gameState.isAnimating) return;
+        
+        this.gameState.isAnimating = true;
+        const damage = Math.floor(Math.random() * 20) + 40;
+        
+        this.showEffect('matsuri');
+        setTimeout(() => {
+            this.applyDamage(damage);
+            this.showRandomUnknownMessage();
+            this.gameState.isAnimating = false;
+            this.checkBattleStatus();
+        }, 1000);
+    }
+
+    handleMagic() {
+        if (this.gameState.isAnimating || this.gameState.matsuri.mp < 15) {
+            if (this.gameState.matsuri.mp < 15) {
+                this.showMessage("MPが足りません！");
+            }
+            return;
+        }
+
+        this.gameState.isAnimating = true;
+        const damage = Math.floor(Math.random() * 200) + 100;
+        this.gameState.matsuri.mp -= 15;
+
+        this.showEffect('matsuri');
+        setTimeout(() => {
+            this.applyDamage(damage);
+            this.showRandomUnknownMessage();
+            this.gameState.isAnimating = false;
+            this.checkBattleStatus();
+        }, 1000);
+    }
+
+    handleTalk() {
+        if (this.gameState.isFinalPhase) {
+            this.showTrueEnding();
         } else {
-            let randomIndex = Math.floor(Math.random() * vampireStories.length);
-            document.getElementById('messages').innerHTML += vampireStories[randomIndex] + '<br>';
-            displayStory();
-            bossAttack();
+            this.showRandomUnknownMessage();
         }
-        addFlashEffect();
-        updateStatus();
     }
-}
 
-function castMagic() {
-    if (gameState === 'battle' && heroMP >= 10 && commandIndex >= 5) {
-        document.getElementById('messages').innerHTML = 'MATSURI casts magic!<br>';
-        bossHP -= 40;
-        bossDamage += 40;
-        heroMP -= 10;
-        if (bossDamage >= 100) {
-            endGame();
-        } else {
-            let randomIndex = Math.floor(Math.random() * vampireStories.length);
-            document.getElementById('messages').innerHTML += vampireStories[randomIndex] + '<br>';
-            displayStory();
-            bossAttack();
+    showTrueEnding() {
+        this.showMessage("MATSURIは禁忌の魔法、グランドクロスを発動した！");
+        setTimeout(() => {
+            document.querySelector('#battle-screen').style.backgroundColor = 'white';
+            setTimeout(() => {
+                this.showMessage("UNKNOWNの姿が消えていく...");
+                setTimeout(() => {
+                    this.showEnding(true);
+                }, 2000);
+            }, 2000);
+        }, 2000);
+    }
+
+    checkBattleStatus() {
+        if (this.gameState.unknown.hp <= 300 && !this.gameState.isFinalPhase) {
+            this.executeFinalPhase();
         }
-        addFlashEffect();
-        updateStatus();
+        this.updateStatus();
     }
-}
 
-function talk() {
-    if (gameState === 'battle' && commandIndex >= 5) {
-        let randomIndex = Math.floor(Math.random() * vampireStories.length);
-        document.getElementById('messages').innerHTML = vampireStories[randomIndex] + '<br>';
-        displayStory();
+    executeFinalPhase() {
+        this.gameState.isFinalPhase = true;
+        this.showEffect('unknown');
+        this.gameState.matsuri.hp = 1;
+        this.showMessage("UNKNOWNの最後の攻撃！MATSURIのHPが1になった！");
     }
-}
 
-function runAway() {
-    if (gameState === 'battle' && commandIndex >= 5) {
-        document.getElementById('messages').innerHTML = 'MATSURI runs away!<br>';
-        endGame();
+    showEnding(isTrue) {
+        const message = isTrue ? 
+            "MATSURIは引き続きUNKNOWNを探す旅に出る..." :
+            "MATSURIは吸血鬼にされました";
+
+        document.querySelector('#ending-message').textContent = message;
+        this.hideElement('battle-screen');
+        this.showElement('ending-screen');
     }
-}
 
-function updateStatus() {
-    document.getElementById('heroHP').textContent = heroHP;
-    document.getElementById('heroMP').textContent = heroMP;
-}
-
-function bossAttack() {
-    if (gameState === 'battle') {
-        document.getElementById('messages').innerHTML += 'UNKNOWN tries to suck MATSURI\'s blood!<br>';
-        heroHP -= Math.floor(Math.random() * 20);
-        if (heroHP <= 1) {
-            endGame();
-        }
-        updateStatus();
+    showRandomUnknownMessage() {
+        const message = this.unknownMessages[Math.floor(Math.random() * this.unknownMessages.length)];
+        this.showMessage(message);
     }
+
+    // ... 他のメソッドは前回のコードと同じ
 }
 
-function endGame() {
-    gameState = 'end';
-    displayStory();
-    document.getElementById('battleScreen').style.display = 'none';
-    document.getElementById('clearScreen').style.display = 'flex';
-    document.getElementById('clearMessage').innerHTML = createClearScreen();
-}
-
-function addFlashEffect() {
-    document.body.classList.add('flash-effect');
-    setTimeout(() => {
-        document.body.classList.remove('flash-effect');
-    }, 500);
-}
-
-function createClearScreen() {
-    return 'ゲームクリア！🎉\n\n最終的にMATSURIはUNKNOWNを追い詰め、彼の邪悪な計画を阻止しました！\n仲間たちの元へ帰ることができたMATSURIは、再び平和な世界を取り戻しました。\nこの冒険を通じて、MATSURIは多くのことを学ぶことができました。';
-}
-
-function restart() {
-    document.getElementById('battleScreen').style.display = 'none';
-    document.getElementById('clearScreen').style.display = 'none';
-    document.getElementById('titleScreen').style.display = 'flex';
-    gameState = 'title';
-    heroHP = 100;
-    heroMP = 50;
-    bossHP = 200;
-    bossDamage = 0;
-    storyIndex = 0;
-    attackCount = 0;
-    commandIndex = 0;
-    document.getElementById('heroHP').textContent = heroHP;
-    document.getElementById('heroMP').textContent = heroMP;
-}
-
-function goToOfficial() {
-    window.location.href = 'https://reverieneon71.my.canva.site/';
-}
+window.onload = () => new YumeAiFantasy();
