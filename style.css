@@ -1,105 +1,165 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'PixelMplus10', sans-serif;
-    background-color: #000;
-    color: #fff;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
 }
 
-#gameContainer {
+#titleScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 1000;
+    background: url('YUMEAIFANTASY.title.gif') no-repeat center center fixed;
+    background-size: contain;
 }
 
-#gameScreen {
-    width: 80%;
-    height: 80%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+#titleScreen img {
+    display: none;
 }
 
-#characterContainer {
+#battleScreen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 60%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px;
+    height: 100vh;
+    overflow: hidden;
+    background: url('BG.png') no-repeat center center fixed;
+    background-size: cover;
 }
 
 .character {
-    width: 150px;
-    height: 150px;
-}
-
-.character img {
-    width: 100%;
+    position: absolute;
+    width: 100px;
     height: auto;
+    bottom: 100px;
 }
 
-#messageWindow {
-    width: 80%;
-    height: 30%;
-    background: rgba(0, 0, 0, 0.7);
-    border: 2px solid #fff;
-    font-size: 16px;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    padding: 10px;
+#hero {
+    right: 10px;
 }
 
-#commandWindow {
-    width: 80%;
-    height: 10%;
+#boss {
+    left: 10px;
+}
+
+#commands {
+    position: fixed;
+    left: 0;
+    bottom: 10px;
+    width: 30%;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: space-around;
-    align-items: center;
+    padding: 10px;
+    transition: opacity 0.3s ease-in-out;
 }
 
-.command {
-    background: transparent;
-    border: 2px solid #fff;
-    color: #fff;
-    padding: 5px 10px;
-    cursor: pointer;
+#messages {
+    position: fixed;
+    right: 0;
+    bottom: 10px;
+    width: 70%;
+    height: 150px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 16px;
 }
 
-#titleScreen, #clearScreen {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+#status {
+    position: fixed;
+    bottom: 0;
+    left: 0;
     width: 100%;
-    height: 100%;
+    text-align: center;
+    font-size: 18px;
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
 }
 
-h1 {
-    font-size: 3em;
+#story {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: auto;
+    max-height: 150px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 14px;
 }
 
-button {
-    font-size: 1.5em;
-    margin: 10px;
+@keyframes flash-animation {
+    0% { background-color: white; }
+    100% { background-color: transparent; }
 }
 
-@media (max-width: 600px) {
-    #gameScreen, #characterContainer, #messageWindow, #commandWindow {
-        width: 100%;
-        height: auto;
-    }
+.flash-effect {
+    animation: flash-animation 0.5s ease-in-out;
+}
+
+#clearScreen {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: url('YUMEAIFANTASY.title.gif') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#clearMessage {
+    font-size: 2em;
+    text-align: center;
+    padding: 20px;
+    animation: text-flicker 0.5s infinite alternate;
+}
+
+@keyframes text-flicker {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
+}
+
+@media (max-width: 600px) {  /* スマホ向けにスタイルを調整 */
     .character {
-        width: 100px;
-        height: 100px;
+        width: 60px;
     }
-    #messageWindow {
-        font-size: 14px;
+
+    #commands {
+        width: 100%;
+        bottom: 70px;
     }
-    .command {
-        font-size: 14px;
+
+    #messages {
+        width: 100%;
+        bottom: 20px;
+    }
+
+    #status {
+        font-size: 16px;
+    }
+
+    #story {
+        width: 80%;
+        font-size: 12px;
     }
 }
