@@ -540,3 +540,17 @@ body {
 }anslateX(-100%) rotate(45deg); }
     to { transform: translateX(100%) rotate(45deg); }
 }
+.story-text {
+    font-size: 24px;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    font-family: "Noto Sans JP", sans-serif;
+}
