@@ -1,12 +1,13 @@
-// メインゲームクラス
 class YumeAiFantasy {
     constructor() {
+        this.animationFrame = null;
         this.initializeGame();
         this.bindEvents();
     }
 
-    // ゲームの初期化
     initializeGame() {
+        console.log('Initializing game...');
+        
         this.gameState = {
             currentScene: 'title',
             storyIndex: 0,
@@ -60,8 +61,7 @@ class YumeAiFantasy {
             "人間の姿を保っているが、内なる獣は常に血を求めている",
             "変身の痛みは永遠に続く。それは私の罪の印"
         ];
-
-        // 会話時の台詞
+                // 会話時の台詞
         this.unknownTalkDialogues = [
             "世紀を超えて生きる者には、記憶が重荷となる",
             "私の記憶は古い図書館のよう。数え切れない物語で満ちている",
@@ -101,10 +101,36 @@ class YumeAiFantasy {
             "黒き聖餐よ、我が魂を捧げる...",
             "全てを終わらせる時が来た。"
         ];
+
+        // エンディングシーケンス
+        this.endingSequence = [
+            "黒の聖餐の力が解き放たれた！",
+            "UNKNOWNの姿が光に包まれていく...",
+            "UNKNOWN: 『ありがとう...やっと解放される...』",
+            "永い夜が明けていく。\n吸血鬼の呪いから解放されたUNKNOWNの姿は、\n清らかな光となって夜空へと消えていった。",
+            "MATSURIは静かに目を閉じる。\n彼の最期の表情には、安らぎが満ちていた。",
+            "永遠の命と引き換えに失われた人としての心。\nその苦しみから解放された魂は、\n新たな夜明けとともに生まれ変わることだろう。",
+            "これは、一人の吸血鬼と、その呪いを解いた少女の物語。\n永遠の命の重さと、解放への祈りを胸に、\nMATSURIは新たな冒険への一歩を踏み出すのであった。"
+        ];
     }
-        // イベントのバインド
+
+    // イベントのバインド
     bindEvents() {
-        // タイトル画面
+        // 既存のイベントリスナーを削除
+        const removeOldListeners = (element, events) => {
+            if (element) {
+                events.forEach(event => {
+                    element.replaceWith(element.cloneNode(true));
+                });
+            }
+        };
+
+        // 各要素のイベントリスナーを更新
+        ['click', 'touchend'].forEach(event => {
+            removeOldListeners(document.getElementById('title-screen'), [event]);
+            removeOldListeners(document.getElementById('next-button'), [event]);
+        });
+                // タイトル画面
         document.getElementById('title-screen').addEventListener('click', () => {
             console.log('Title screen clicked');
             this.hideElement('title-screen');
@@ -131,15 +157,25 @@ class YumeAiFantasy {
         document.getElementById('magic').addEventListener('click', () => this.handleMagic());
         document.getElementById('talk').addEventListener('click', () => this.handleTalk());
         document.getElementById('escape').addEventListener('click', () => this.handleEscape());
-        document.getElementById('retry').addEventListener('click', () => this.resetGame());
+
+        // リトライボタン
+        document.getElementById('retry-ending').addEventListener('click', () => this.resetGame());
         document.getElementById('retry-gameover').addEventListener('click', () => this.resetGame());
+
+        // 公式サイトへのリンク
+        document.getElementById('visit-site').addEventListener('click', () => {
+            window.location.href = 'https://reverieneon71.my.canva.site/';
+        });
 
         // タッチデバイス対応
         const addTouchEvents = (element) => {
+            if (!element) return;
+            
             element.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 element.classList.add('touched');
             });
+            
             element.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 element.classList.remove('touched');
@@ -196,8 +232,7 @@ class YumeAiFantasy {
         this.gameState.isAnimating = false;
         this.checkBattleStatus();
     }
-
-    async handleMagic() {
+        async handleMagic() {
         if (this.gameState.isAnimating || this.gameState.matsuri.mp < 15) {
             if (this.gameState.matsuri.mp < 15) {
                 this.showMessage("MPが足りません！");
@@ -258,8 +293,13 @@ class YumeAiFantasy {
     handleEscape() {
         this.showGameOver("MATSURIは吸血鬼にされました");
     }
-        // アニメーションとエフェクト
+
+    // アニメーションとエフェクト
     async showAttackAnimation(character) {
+        if (this.animationFrame) {
+            cancelAnimationFrame(this.animationFrame);
+        }
+        
         const container = document.getElementById(`${character}-container`);
         container.classList.add('attack-animation');
         await this.wait(500);
@@ -304,15 +344,13 @@ class YumeAiFantasy {
         document.body.appendChild(damageText);
         setTimeout(() => damageText.remove(), 1000);
     }
-
-    // ダメージ処理
+        // ダメージ処理とメッセージ表示
     async applyDamage(damage) {
         this.gameState.unknown.hp = Math.max(0, this.gameState.unknown.hp - damage);
         this.updateStatus();
         await this.wait(500);
     }
 
-    // メッセージ表示
     async showMessage(text) {
         const messageText = document.getElementById('message-text');
         messageText.style.opacity = '0';
@@ -335,7 +373,7 @@ class YumeAiFantasy {
         await this.showMessage(`UNKNOWN: 『${message}』`);
     }
 
-    // 戦闘状態チェック
+    // 戦闘状態チェックと特殊イベント
     async checkBattleStatus() {
         if (this.gameState.unknown.hp <= 300 && !this.gameState.isFinalPhase) {
             await this.executeFinalPhase();
@@ -345,7 +383,6 @@ class YumeAiFantasy {
         this.updateStatus();
     }
 
-    // 最終フェーズ
     async executeFinalPhase() {
         this.gameState.isFinalPhase = true;
         await this.showMagicAnimation('boss');
@@ -356,7 +393,6 @@ class YumeAiFantasy {
         document.getElementById('magic').disabled = true;
     }
 
-    // 黒の聖餐解放
     async inspireDarkCommunion() {
         this.gameState.darkCommunionInspired = true;
         await this.showMessage("MATSURIは何かを思い出しそうになった...");
@@ -366,23 +402,27 @@ class YumeAiFantasy {
         magicButton.classList.add('special-skill');
     }
 
-    // 特殊エンディング
+    // エンディング処理
     async showSpecialEnding() {
-        await this.showMessage("黒の聖餐の力が解き放たれた！");
-        await this.showMessage("UNKNOWNの姿が光に包まれていく...");
-        await this.showMessage("UNKNOWN: 『ありがとう...やっと解放される...』");
+        for (const text of this.endingSequence) {
+            await this.showMessage(text);
+            await this.wait(3000);
+        }
         
         this.hideElement('battle-screen');
         this.showElement('ending-screen');
         
         document.getElementById('ending-title').textContent = "TRUE END";
-        document.getElementById('ending-message').textContent = 
-            "MATSURIは吸血鬼の呪いを解き、新たな冒険へと旅立つ...";
+        document.getElementById('ending-message').innerHTML = 
+            "永遠の闇から解放された魂は、<br>新たな夜明けとともに生まれ変わる。<br><br>" +
+            "そして物語は、新たな冒険の序章となる。";
         
-        this.showElement('ending-choices');
+        const endingChoices = document.getElementById('ending-choices');
+        endingChoices.classList.remove('hidden');
+        await this.wait(500);
+        endingChoices.style.opacity = '1';
     }
 
-    // ゲームオーバー
     showGameOver(message) {
         this.hideElement('battle-screen');
         this.showElement('gameover-screen');
@@ -391,23 +431,26 @@ class YumeAiFantasy {
 
     // ユーティリティ関数
     hideElement(id) {
-        document.getElementById(id).classList.add('hidden');
+        const element = document.getElementById(id);
+        if (element) element.classList.add('hidden');
     }
 
     showElement(id) {
-        document.getElementById(id).classList.remove('hidden');
+        const element = document.getElementById(id);
+        if (element) element.classList.remove('hidden');
     }
 
     wait(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // ステータス更新
     updateStatus() {
         const updateBar = (current, max, barId) => {
             const bar = document.getElementById(barId);
-            const percentage = (current / max) * 100;
-            bar.style.width = `${percentage}%`;
+            if (bar) {
+                const percentage = (current / max) * 100;
+                bar.style.width = `${percentage}%`;
+            }
         };
 
         document.getElementById('matsuri-hp').textContent = this.gameState.matsuri.hp;
@@ -417,7 +460,6 @@ class YumeAiFantasy {
         updateBar(this.gameState.matsuri.mp, this.gameState.matsuri.maxMp, 'matsuri-mp-bar');
     }
 
-    // ゲームリセット
     resetGame() {
         location.reload();
     }
