@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yume Ai Fantasy</title>
     <style>
         body {
@@ -15,9 +15,17 @@
             align-items: center;
             min-height: 100vh;
         }
+        #title-screen {
+            text-align: center;
+            cursor: pointer;
+        }
         #title-screen img {
             max-width: 100%;
             height: auto;
+        }
+        #start-message {
+            margin-top: 20px;
+            font-size: 24px;
         }
         .hidden {
             display: none !important;
@@ -28,15 +36,26 @@
     <div id="game-container">
         <div id="title-screen">
             <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
-            <div>Touch to Start</div>
+            <div id="start-message">Touch to Start</div>
         </div>
     </div>
 
     <script>
-        document.getElementById('title-screen').addEventListener('click', function() {
-            console.log('Clicked');
-            // ここでクリック時の処理を確認
-        });
+        // タッチとクリックの両方に対応
+        const titleScreen = document.getElementById('title-screen');
+
+        // タッチイベント
+        titleScreen.addEventListener('touchstart', startGame, { passive: false });
+        // クリックイベント（PC用）
+        titleScreen.addEventListener('click', startGame);
+
+        function startGame(e) {
+            // デフォルトの動作をキャンセル
+            e.preventDefault();
+            
+            console.log('Game started!');
+            // ここにゲーム開始の処理を追加
+        }
     </script>
 </body>
 </html>
