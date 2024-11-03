@@ -4,58 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yume Ai Fantasy</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #000;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        #title-screen {
-            text-align: center;
-            cursor: pointer;
-        }
-        #title-screen img {
-            max-width: 100%;
-            height: auto;
-        }
-        #start-message {
-            margin-top: 20px;
-            font-size: 24px;
-        }
-        .hidden {
-            display: none !important;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <div id="title-screen">
-            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
-            <div id="start-message">Touch to Start</div>
+        <!-- ローディング画面 -->
+        <div id="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text glow-text">Loading...</div>
+        </div>
+
+        <!-- タイトル画面 -->
+        <div id="title-screen" class="hidden">
+            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル" class="title-image">
+            <div id="start-message" class="glow-text">Touch to Start</div>
+        </div>
+
+        <!-- ストーリー画面 -->
+        <div id="story-screen" class="hidden">
+            <div class="story-overlay"></div>
+            <div class="message-box center-message">
+                <div id="story-text" class="fade-in"></div>
+                <button id="next-button" class="game-button glow-effect">Next</button>
+            </div>
+        </div>
+
+        <!-- 戦闘画面 -->
+        <div id="battle-screen" class="hidden">
+            <div class="battle-background">
+                <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
+            </div>
+            
+            <!-- キャラクター -->
+            <div id="characters">
+                <div id="matsuri-container" class="character-container matsuri">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" id="matsuri" class="character">
+                    <div class="status-bars">
+                        <div class="hp-bar">
+                            <div class="bar-fill" id="matsuri-hp-bar"></div>
+                            <div class="bar-text">HP: <span id="matsuri-hp">1000</span>/1000</div>
+                        </div>
+                        <div class="mp-bar">
+                            <div class="bar-fill" id="matsuri-mp-bar"></div>
+                            <div class="bar-text">MP: <span id="matsuri-mp">100</span>/100</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="unknown-container" class="character-container unknown">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" id="unknown" class="character">
+                </div>
+            </div>
+
+            <!-- エフェクトレイヤー -->
+            <div id="effect-layer"></div>
+            <div id="flash-layer" class="hidden"></div>
+
+            <!-- メッセージウィンドウ -->
+            <div id="message-window" class="message-box">
+                <div id="message-text"></div>
+            </div>
+
+            <!-- コマンドウィンドウ -->
+            <div id="command-window">
+                <button id="attack" class="command-button">たたかう</button>
+                <button id="magic" class="command-button">まほう</button>
+                <button id="talk" class="command-button">はなす</button>
+                <button id="escape" class="command-button">にげる</button>
+            </div>
+        </div>
+
+        <!-- エンディング画面 -->
+        <div id="ending-screen" class="hidden">
+            <div class="ending-overlay"></div>
+            <div class="message-box center-message">
+                <div id="ending-title" class="magical-text"></div>
+                <div id="ending-message" class="fade-in"></div>
+                <div id="ending-choices" class="hidden">
+                    <button id="retry" class="game-button glow-effect">もういちど</button>
+                    <a href="https://reverieneon71.my.canva.site/" target="_blank">
+                        <button class="game-button glow-effect">公式サイト</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ゲームオーバー画面 -->
+        <div id="gameover-screen" class="hidden">
+            <div class="gameover-overlay"></div>
+            <div id="gameover-text" class="gameover-message">GAME OVER</div>
+            <div class="message-box center-message">
+                <div id="gameover-message" class="fade-in"></div>
+                <div class="ending-choices">
+                    <button id="retry-gameover" class="game-button glow-effect">もういちど</button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <script>
-        // タッチとクリックの両方に対応
-        const titleScreen = document.getElementById('title-screen');
-
-        // タッチイベント
-        titleScreen.addEventListener('touchstart', startGame, { passive: false });
-        // クリックイベント（PC用）
-        titleScreen.addEventListener('click', startGame);
-
-        function startGame(e) {
-            // デフォルトの動作をキャンセル
-            e.preventDefault();
-            
-            console.log('Game started!');
-            // ここにゲーム開始の処理を追加
-        }
-    </script>
+    <script src="game.js"></script>
 </body>
 </html>
