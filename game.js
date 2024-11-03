@@ -1,44 +1,8 @@
-// game.js
 class YumeAiFantasy {
     constructor() {
-        // バインドを constructor で行う
-        this.handleAttack = this.handleAttack.bind(this);
-        this.handleMagic = this.handleMagic.bind(this);
-        this.handleTalk = this.handleTalk.bind(this);
-        this.handleEscape = this.handleEscape.bind(this);
-        this.startGame = this.startGame.bind(this);
-        this.nextStory = this.nextStory.bind(this);
-        this.resetGame = this.resetGame.bind(this);
-
         this.initializeGame();
-        this.preloadAssets();
+        this.bindEvents();
     }
-
-    bindEvents() {
-        // イベントリスナーの設定を修正
-        document.querySelector('#title-screen').addEventListener('click', this.startGame);
-        document.querySelector('#next-button').addEventListener('click', this.nextStory);
-        document.querySelector('#attack').addEventListener('click', this.handleAttack);
-        document.querySelector('#magic').addEventListener('click', this.handleMagic);
-        document.querySelector('#talk').addEventListener('click', this.handleTalk);
-        document.querySelector('#escape').addEventListener('click', this.handleEscape);
-        document.querySelector('#retry').addEventListener('click', this.resetGame);
-        document.querySelector('#retry-gameover').addEventListener('click', this.resetGame);
-
-        // タッチデバイス対応
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => {
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                button.classList.add('touched');
-            });
-            button.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                button.classList.remove('touched');
-            });
-        });
-    }
-}
 
     initializeGame() {
         this.gameState = {
@@ -52,7 +16,7 @@ class YumeAiFantasy {
                 hp: 2000,
                 maxHp: 2000
             },
-            currentScene: 'loading',
+            currentScene: 'title',
             storyIndex: 0,
             isFinalPhase: false,
             isAnimating: false,
@@ -186,17 +150,16 @@ class YumeAiFantasy {
             };
             img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
         });
-    }
+     }
 
     bindEvents() {
-        document.querySelector('#title-screen').addEventListener('click', () => this.startGame());
-        document.querySelector('#next-button').addEventListener('click', () => this.nextStory());
-        document.querySelector('#attack').addEventListener('click', () => this.handleAttack());
-        document.querySelector('#magic').addEventListener('click', () => this.handleMagic());
-        document.querySelector('#talk').addEventListener('click', () => this.handleTalk());
-        document.querySelector('#escape').addEventListener('click', () => this.handleEscape());
-        document.querySelector('#retry').addEventListener('click', () => this.resetGame());
-        document.querySelector('#retry-gameover').addEventListener('click', () => this.resetGame());
+        // イベントリスナーを単純化
+        const titleScreen = document.getElementById('title-screen');
+        titleScreen.addEventListener('click', () => {
+            titleScreen.style.display = 'none';
+            document.getElementById('story-screen').classList.remove('hidden');
+            this.updateStory();
+        });
 
         // タッチデバイス対応
         const buttons = document.querySelectorAll('button');
@@ -495,4 +458,6 @@ class YumeAiFantasy {
 }
 
 // ゲーム開始
-window.onload = () => new YumeAiFantasy();
+document.addEventListener('DOMContentLoaded', () => {
+    new YumeAiFantasy();
+});
