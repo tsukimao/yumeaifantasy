@@ -36,6 +36,7 @@ function startGame() {
     displayStory();
     updateStatus();
     updateCommandAvailability();
+    document.querySelectorAll('.character').forEach(character => character.style.display = 'block');
 }
 
 function displayStory() {
@@ -149,4 +150,24 @@ function addFlashEffect() {
 
 function createClearScreen() {
     return 'ゲームクリア！🎉\n\n最終的にMATSURIはUNKNOWNを追い詰め、彼の邪悪な計画を阻止しました！\n仲間たちの元へ帰ることができたMATSURIは、再び平和な世界を取り戻しました。\nこの冒険を通じて、MATSURIは多くのことを学ぶことができました。';
+}
+
+function restart() {
+    document.getElementById('battleScreen').style.display = 'none';
+    document.getElementById('clearScreen').style.display = 'none';
+    document.getElementById('titleScreen').style.display = 'flex';
+    gameState = 'title';
+    heroHP = 100;
+    heroMP = 50;
+    bossHP = 200;
+    bossDamage = 0;
+    storyIndex = 0;
+    attackCount = 0;
+    commandIndex = 0;
+    document.getElementById('heroHP').textContent = heroHP;
+    document.getElementById('heroMP').textContent = heroMP;
+}
+
+function goToOfficial() {
+    window.location.href = 'https://reverieneon71.my.canva.site/';
 }
