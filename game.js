@@ -1,37 +1,88 @@
 class YumeAiFantasy {
     constructor() {
-        // メソッドのバインド
-        this.startGame = this.startGame.bind(this);
-        this.nextStory = this.nextStory.bind(this);
-        this.handleAttack = this.handleAttack.bind(this);
-        this.handleMagic = this.handleMagic.bind(this);
-        this.handleTalk = this.handleTalk.bind(this);
-        this.handleEscape = this.handleEscape.bind(this);
-        this.resetGame = this.resetGame.bind(this);
-
+        console.log('Game initializing...'); // デバッグログ
         this.initializeGame();
-        this.bindEvents();
     }
 
     initializeGame() {
+        console.log('Setting up initial state...'); // デバッグログ
+        
+        // 基本状態の設定
         this.gameState = {
-            matsuri: {
-                hp: 1000,
-                mp: 100,
-                maxHp: 1000,
-                maxMp: 100
-            },
-            unknown: {
-                hp: 2000,
-                maxHp: 2000
-            },
             currentScene: 'title',
             storyIndex: 0,
-            isFinalPhase: false,
-            isAnimating: false,
-            darkCommunionInspired: false,
-            battleCount: 0
+            isAnimating: false
         };
+
+        // イベントリスナーの設定
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        console.log('Setting up event listeners...'); // デバッグログ
+
+        // タイトル画面のクリック処理
+        const titleScreen = document.querySelector('#title-screen');
+        if (titleScreen) {
+            console.log('Title screen found, adding listeners...'); // デバッグログ
+            
+            const startGame = () => {
+                console.log('Start game triggered'); // デバッグログ
+                titleScreen.style.display = 'none';
+                document.querySelector('#story-screen').classList.remove('hidden');
+                this.updateStory();
+            };
+
+            titleScreen.addEventListener('click', startGame);
+            titleScreen.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                startGame();
+            });
+        } else {
+            console.error('Title screen element not found!'); // エラーログ
+        }
+
+        // Next ボタンの処理
+        const nextButton = document.querySelector('#next-button');
+        if (nextButton) {
+            console.log('Next button found, adding listeners...'); // デバッグログ
+            
+            const handleNext = () => {
+                console.log('Next button clicked'); // デバッグログ
+                if (this.gameState.storyIndex < this.storySequence.length - 1) {
+                    this.gameState.storyIndex++;
+                    this.updateStory();
+                } else {
+                    this.startBattle();
+                }
+            };
+
+            nextButton.addEventListener('click', handleNext);
+            nextButton.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleNext();
+            });
+        } else {
+            console.error('Next button not found!'); // エラーログ
+        }
+    }
+
+    updateStory() {
+        console.log('Updating story...', this.gameState.storyIndex); // デバッグログ
+        const storyText = document.querySelector('#story-text');
+        if (storyText) {
+            storyText.textContent = this.storySequence[this.gameState.storyIndex];
+        } else {
+            console.error('Story text element not found!'); // エラーログ
+        }
+    }
+}
+
+// ゲーム開始時の処理を修正
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, starting game...'); // デバッグログ
+    window.game = new YumeAiFantasy();
+});
 
         this.storySequence = [
             "MATSURIは男を追い詰めた",
