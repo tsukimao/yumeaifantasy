@@ -422,3 +422,108 @@ body {
         font-size: 24px;
     }
 }
+/* エフェクト関連のスタイル追加 */
+@keyframes screenShake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-5px, -5px); }
+    50% { transform: translate(5px, 5px); }
+    75% { transform: translate(-5px, 5px); }
+}
+
+@keyframes screenFlash {
+    0%, 100% { background: transparent; }
+    50% { background: rgba(255, 255, 255, 0.3); }
+}
+
+@keyframes darkCommunionEffect {
+    0% { 
+        background: transparent;
+        transform: scale(1);
+    }
+    50% { 
+        background: rgba(128, 0, 128, 0.3);
+        transform: scale(1.1);
+    }
+    100% { 
+        background: transparent;
+        transform: scale(1);
+    }
+}
+
+.screen-shake {
+    animation: screenShake 0.5s;
+}
+
+.screen-flash {
+    animation: screenFlash 0.3s;
+}
+
+/* エンディング画面の強化 */
+#ending-screen {
+    background: linear-gradient(to bottom, #000000, #1a0f3c);
+    transition: all 1s ease;
+}
+
+#ending-title {
+    color: #ffd700;
+    text-shadow: 0 0 10px #ffd700;
+    font-size: clamp(32px, 8vw, 64px);
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInDown 1s forwards;
+}
+
+#ending-message {
+    color: #ffffff;
+    text-shadow: 0 0 5px #ffffff;
+    font-size: clamp(18px, 4vw, 28px);
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeIn 2s 1s forwards;
+    padding: 0 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#ending-choices {
+    margin-top: 60px;
+    display: flex;
+    gap: 30px;
+    opacity: 0;
+    animation: fadeIn 1s 3s forwards;
+}
+
+.ending-button {
+    padding: 15px 40px;
+    font-size: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    border: 2px solid #ffd700;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.ending-button:hover {
+    background: rgba(255, 215, 0, 0.2);
+    transform: scale(1.05);
+}
+
+.ending-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 215, 0, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: buttonShine 3s infinite;
+}
