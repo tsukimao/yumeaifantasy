@@ -23,11 +23,20 @@
 </head>
 <body>
     <div id="game-container">
-        <div id="title-screen">
-            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
-            <div>Touch to Start</div>
-        </div>
+    <div id="title-screen">
+        <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル">
+        <div>Touch to Start</div>
     </div>
+
+    <div id="story-screen">
+        <div id="story-text"></div>
+        <button id="next-button">Next</button>
+    </div>
+
+    <div id="battle-screen">
+        <!-- 戦闘画面の内容 -->
+    </div>
+</div>
 
     <script>
         document.getElementById('title-screen').addEventListener('click', function() {
