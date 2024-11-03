@@ -1,165 +1,61 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yume Ai Fantasy</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
-            background-color: #000;
-        }
-
-        /* 戦闘画面全体 */
-        #battleScreen {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: url('BG.png') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        /* キャラクターの配置 */
-        .character {
-            position: absolute;
-            width: 120px; /* PC向けのキャラクターサイズ */
-            height: auto;
-        }
-
-        #hero {
-            right: 10%;
-            bottom: 20%;
-        }
-
-        #boss {
-            left: 10%;
-            bottom: 20%;
-        }
-
-        /* コマンドウィンドウ */
-        #commands {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            width: 30%;
-            background-color: rgba(0, 0, 128, 0.8);
-            color: white;
-            border-radius: 10px;
-            padding: 10px;
-        }
-
-        #commands button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 5px;
-            font-size: 1.2em; /* ボタンのフォントサイズ */
-            background-color: rgba(255,255,255,0.2);
-            color: white;
-            border: none;
-        }
-
-        /* メッセージウィンドウ */
-        #messages {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80%;
-            background-color: rgba(0, 0, 128, 0.8);
-            color: white;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        /* ステータス表示 */
-        #status {
-           position :absolute; 
-           bottom :10px ;right :10px ;
-           background-color :rgba(0 ,128 ,128 ,1);
-           border-radius :10px ;
-           padding :15px ;
-           color :white ;
-           font-size :1.2em ;
-           text-align :left ;
-           width :auto ;
-}
-
-#status p { margin :5px ;}
-
-/* スマホ向けのスタイル */
-@media (max-width :600px) { 
-#hero ,#boss { width :80px ;} /* キャラクターサイズを小さく */
-#commands { width :90% ;bottom :70px ;} /* コマンドウィンドウを広げる */
-#messages { width :90% ;top :5% ;} /* メッセージウィンドウを広げる */
-#status { font-size :1em ;padding :10px ;} /* ステータス表示を調整 */
-}
-</style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- 戦闘画面 -->
-<div id='battleScreen'>
-    <img src='yumeaimatsuri.png' id='hero' class='character'>
-    <img src='boss.png' id='boss' class='character'>
-    
-    <!-- コマンドウィンドウ -->
-    <div id='commands'>
-        <button onclick='attack()'>たたかう</button>
-        <button onclick='talk()'>はなす</button>
-        <button onclick='castMagic()'>まほう</button>
-        <button onclick='runAway()'>にげる</button>
+    <div id="game-container">
+        <div id="title-screen">
+            <img src="YUMEAIFANTASY.title.gif" alt="タイトル">
+            <div id="start-message">画面をタップしてスタート</div>
+        </div>
+        
+        <div id="story-screen" class="hidden">
+            <div id="story-text"></div>
+            <button id="next-button">次へ</button>
+        </div>
+        
+        <div id="battle-screen" class="hidden">
+            <img src="BG.png" alt="背景" class="background">
+            <div id="characters">
+                <img src="yumeaimatsuri.png" alt="MATSURI" id="matsuri">
+                <img src="boss.png" alt="UNKNOWN" id="unknown">
+            </div>
+            <div id="effect-layer"></div>
+            <div id="message-window"></div>
+            <div id="status-window">
+                <div id="matsuri-status">
+                    <div>MATSURI</div>
+                    <div>HP: <span id="matsuri-hp">1000</span></div>
+                    <div>MP: <span id="matsuri-mp">100</span></div>
+                </div>
+                <div id="unknown-status">
+                    <div>UNKNOWN</div>
+                    <div>HP: <span id="unknown-hp">2000</span></div>
+                </div>
+            </div>
+            <div id="command-window">
+                <button id="attack">たたかう</button>
+                <button id="magic">まほう</button>
+                <button id="talk">はなす</button>
+                <button id="escape">にげる</button>
+            </div>
+        </div>
+        
+        <div id="ending-screen" class="hidden">
+            <div id="ending-message"></div>
+            <div id="ending-choices">
+                <button id="retry">もういっかい</button>
+                <a href="https://reverieneon71.my.canva.site/" target="_blank">
+                    <button>MATSURIの公式ページ</button>
+                </a>
+            </div>
+        </div>
     </div>
-
-    <!-- メッセージウィンドウ -->
-    <div id='messages'>
-      UNKNOWNが現れた！
-    </div>
-
-    <!-- ステータス表示 -->
-    <div id='status'>
-      <p>MATSURI HP:<span id="heroHP">100</span> MP:<span id="heroMP">50</span></p>
-      <p>UNKNOWN HP:<span id="bossHP">200</span></p>
-    </div>
-</div>
-
-<script>
-// ゲームロジック
-let heroHP = 100; let heroMP =50; let bossHP =200;
-
-function attack (){ 
-document.getElementById('messages').innerHTML ="MATSURI attacks UNKNOWN!"; 
-bossHP -=20; 
-updateStatus(); 
-}
-
-function castMagic (){ 
-if (heroMP >=10){ document.getElementById('messages').innerHTML ="MATSURI casts magic!"; 
-bossHP -=40; 
-heroMP -=10; 
-updateStatus (); 
-}}
-
-function talk (){ document.getElementById('messages').innerHTML ="UNKNOWNは何か言いたそうだ..."; }
-
-function runAway (){ document.getElementById('messages').innerHTML ="MATSURIは逃げ出した！"; }
-
-function updateStatus (){ 
-document.getElementById('heroHP').textContent = heroHP; 
-document.getElementById('heroMP').textContent = heroMP; 
-document.getElementById('bossHP').textContent = bossHP; 
-
-if (bossHP <=0){ document.getElementById('messages').innerHTML ="UNKNOWNは倒れた！"; }
-}
-</script>
-
+    <script src="game.js"></script>
 </body>
 </html>
