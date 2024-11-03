@@ -26,7 +26,7 @@ const storyParts = [
 ];
 
 const vampireStories = [
-    // 吸血鬼の話をここに追加
+    // ブラウザ上で表示する吸血鬼の話
 ];
 
 function startGame() {
