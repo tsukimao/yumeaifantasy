@@ -27,6 +27,13 @@
                 <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
             </div>
             
+            <!-- エフェクトレイヤー（新規追加） -->
+            <div id="effect-layer" class="effect-layer">
+                <div id="screen-flash" class="screen-flash hidden"></div>
+                <div id="screen-shake" class="screen-shake hidden"></div>
+                <div id="particle-container" class="particle-container"></div>
+            </div>
+
             <!-- キャラクター -->
             <div id="characters">
                 <div id="matsuri-container" class="character-container matsuri">
@@ -60,19 +67,27 @@
                 <button id="escape" class="command-button">にげる</button>
             </div>
 
-            <!-- エフェクトレイヤー -->
-            <div id="effect-layer"></div>
-            <div id="flash-layer" class="hidden"></div>
+            <!-- 黒の聖餐エフェクト（新規追加） -->
+            <div id="dark-communion-effects" class="hidden">
+                <div class="magic-circle"></div>
+                <div class="dark-veil"></div>
+                <div class="light-particles"></div>
+            </div>
         </div>
 
-        <!-- エンディング画面 -->
+        <!-- エンディング画面（強化版） -->
         <div id="ending-screen" class="hidden">
-            <div id="ending-title"></div>
-            <div id="ending-message"></div>
-            <div id="ending-choices" class="hidden">
-                <button id="retry-ending" class="ending-button">もういちど</button>
-                <button id="visit-site" class="ending-button">MATSURIの公式HPへ</button>
+            <div class="ending-background"></div>
+            <div class="ending-content">
+                <div id="ending-title" class="ending-title"></div>
+                <div id="ending-story" class="ending-story"></div>
+                <div id="ending-message" class="ending-message"></div>
+                <div id="ending-choices" class="ending-choices hidden">
+                    <button id="retry-ending" class="ending-button">もういちど</button>
+                    <button id="visit-site" class="ending-button">MATSURIの公式HPへ</button>
+                </div>
             </div>
+            <div class="ending-particles"></div>
         </div>
 
         <!-- ゲームオーバー画面 -->
@@ -80,6 +95,12 @@
             <div class="gameover-overlay"></div>
             <div id="gameover-message" class="gameover-text"></div>
             <button id="retry-gameover" class="command-button">もういちど</button>
+        </div>
+
+        <!-- ローディング画面（新規追加） -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading...</div>
         </div>
     </div>
 
@@ -89,6 +110,8 @@
             <button onclick="window.game.debug().forcePhase('final')">最終フェーズ</button>
             <button onclick="window.game.debug().triggerDarkCommunion()">黒の聖餐解放</button>
             <button onclick="window.game.debug().setHP(300)">HP300設定</button>
+            <button onclick="window.game.debug().testEffect('flash')">フラッシュテスト</button>
+            <button onclick="window.game.debug().testEffect('shake')">シェイクテスト</button>
         </div>
     </div>
 
