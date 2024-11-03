@@ -1,5 +1,14 @@
 class YumeAiFantasy {
     constructor() {
+        // メソッドのバインド
+        this.startGame = this.startGame.bind(this);
+        this.nextStory = this.nextStory.bind(this);
+        this.handleAttack = this.handleAttack.bind(this);
+        this.handleMagic = this.handleMagic.bind(this);
+        this.handleTalk = this.handleTalk.bind(this);
+        this.handleEscape = this.handleEscape.bind(this);
+        this.resetGame = this.resetGame.bind(this);
+
         this.initializeGame();
         this.bindEvents();
     }
@@ -34,7 +43,6 @@ class YumeAiFantasy {
             "戦闘を開始します。"
         ];
 
-        // 戦闘時の台詞
         this.unknownBattleDialogues = [
             "永遠の命は祝福ではなく、呪いだ。愛する者たちの死を何度も見続ける運命なのだから",
             "時は流れ続け、私だけが取り残される。それが吸血鬼の宿命だ",
@@ -58,7 +66,6 @@ class YumeAiFantasy {
             "変身の痛みは永遠に続く。それは私の罪の印"
         ];
 
-        // 会話時の台詞
         this.unknownTalkDialogues = [
             "世紀を超えて生きる者には、記憶が重荷となる",
             "私の記憶は古い図書館のよう。数え切れない物語で満ちている",
@@ -91,7 +98,8 @@ class YumeAiFantasy {
             "夜明けは来ない。しかし、それは必ずしも絶望を意味しない",
             "永遠の命を持つ者にも、変化の可能性はある。それが私の希望"
         ];
-                this.darkCommunionEvent = [
+
+        this.darkCommunionEvent = [
             "MATSURIは禁忌の魔法を思い出した...",
             "黒き聖餐よ、我が魂を捧げる...",
             "全てを終わらせる時が来た。"
@@ -104,79 +112,23 @@ class YumeAiFantasy {
             final: { hp: 300, threshold: 0 }
         };
 
-        this.bindEvents();
+        // ローディング画面を非表示にし、タイトル画面を表示
+        this.hideElement('loading-screen');
+        this.showElement('title-screen');
     }
 
-    preloadAssets() {
-        // デバッグ用のタイムアウト設定
-        setTimeout(() => {
-            console.log("Timeout triggered - forcing start");
-            this.hideElement('loading-screen');
-            this.showElement('title-screen');
-            this.gameState.currentScene = 'title';
-        }, 2000);
-
-        const assets = [
-            'BG.png',
-            'YUMEAIFANTASY.title.gif',
-            'boss.mahou.gif',
-            'boss.png',
-            'matsuri.mahou.gif',
-            'yumeaimatsuri.png'
-        ];
-
-        let loadedAssets = 0;
-        const totalAssets = assets.length;
-
-        assets.forEach(asset => {
-            const img = new Image();
-            img.onload = () => {
-                loadedAssets++;
-                console.log(`Loaded: ${asset} (${loadedAssets}/${totalAssets})`);
-                if (loadedAssets === totalAssets) {
-                    this.hideElement('loading-screen');
-                    this.showElement('title-screen');
-                    this.gameState.currentScene = 'title';
-                }
-            };
-            img.onerror = () => {
-                loadedAssets++;
-                console.error(`Failed to load: ${asset}`);
-                if (loadedAssets === totalAssets) {
-                    this.hideElement('loading-screen');
-                    this.showElement('title-screen');
-                    this.gameState.currentScene = 'title';
-                }
-            };
-            img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
-        });
-     }
-
     bindEvents() {
-        // イベントリスナーを単純化
-        const titleScreen = document.getElementById('title-screen');
-        titleScreen.addEventListener('click', () => {
-            titleScreen.style.display = 'none';
-            document.getElementById('story-screen').classList.remove('hidden');
-            this.updateStory();
-        });
-
-        // タッチデバイス対応
-        const buttons = document.querySelectorAll('button');
-        buttons.forEach(button => {
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                button.classList.add('touched');
-            });
-            button.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                button.classList.remove('touched');
-            });
-        });
+        document.getElementById('title-screen').addEventListener('click', this.startGame);
+        document.getElementById('next-button').addEventListener('click', this.nextStory);
+        document.getElementById('attack').addEventListener('click', this.handleAttack);
+        document.getElementById('magic').addEventListener('click', this.handleMagic);
+        document.getElementById('talk').addEventListener('click', this.handleTalk);
+        document.getElementById('escape').addEventListener('click', this.handleEscape);
+        document.getElementById('retry').addEventListener('click', this.resetGame);
+        document.getElementById('retry-gameover').addEventListener('click', this.resetGame);
     }
 
     async startGame() {
-        if (this.gameState.currentScene !== 'title') return;
         this.hideElement('title-screen');
         this.showElement('story-screen');
         this.gameState.currentScene = 'story';
@@ -196,7 +148,7 @@ class YumeAiFantasy {
 
     async updateStory() {
         this.gameState.isAnimating = true;
-        const storyText = document.querySelector('#story-text');
+        const storyText = document.getElementById('story-text');
         storyText.style.opacity = '0';
         
         await this.wait(300);
@@ -213,7 +165,8 @@ class YumeAiFantasy {
         this.updateStatus();
         this.showMessage("コマンドを選択してください。");
     }
-        async handleAttack() {
+
+    async handleAttack() {
         if (this.gameState.isAnimating) return;
         
         this.gameState.battleCount++;
@@ -298,14 +251,14 @@ class YumeAiFantasy {
     }
 
     async showAttackAnimation(character) {
-        const container = document.querySelector(`#${character}-container`);
+        const container = document.getElementById(`${character}-container`);
         container.classList.add('attack-animation');
         await this.wait(500);
         container.classList.remove('attack-animation');
     }
 
     async showMagicAnimation(character) {
-        const effectLayer = document.querySelector('#effect-layer');
+        const effectLayer = document.getElementById('effect-layer');
         const effect = document.createElement('img');
         effect.src = `https://tsukimao.github.io/yumeaifantasy/${character}.mahou.gif`;
         effect.className = 'magic-effect';
@@ -316,7 +269,7 @@ class YumeAiFantasy {
     }
 
     async executeDarkCommunion() {
-        const flashLayer = document.querySelector('#flash-layer');
+        const flashLayer = document.getElementById('flash-layer');
         
         for (const text of this.darkCommunionEvent) {
             await this.showMessage(text);
@@ -336,7 +289,7 @@ class YumeAiFantasy {
         damageText.className = 'damage-text';
         damageText.textContent = damage;
         
-        const unknown = document.querySelector('#unknown-container');
+        const unknown = document.getElementById('unknown-container');
         const rect = unknown.getBoundingClientRect();
         
         damageText.style.left = `${rect.left + rect.width / 2}px`;
@@ -345,7 +298,8 @@ class YumeAiFantasy {
         document.body.appendChild(damageText);
         setTimeout(() => damageText.remove(), 1000);
     }
-        async applyDamage(damage) {
+
+    async applyDamage(damage) {
         this.gameState.unknown.hp = Math.max(0, this.gameState.unknown.hp - damage);
         this.updateStatus();
         await this.wait(500);
@@ -380,16 +334,16 @@ class YumeAiFantasy {
         this.gameState.matsuri.hp = 1;
         await this.showMessage("UNKNOWNの最後の攻撃！MATSURIのHPが1になった！");
         await this.showMessage("ただの攻撃ではこの男を倒せないようだ...");
-        document.querySelector('#attack').disabled = true;
-        document.querySelector('#magic').disabled = true;
+        document.getElementById('attack').disabled = true;
+        document.getElementById('magic').disabled = true;
     }
 
     async inspireDarkCommunion() {
         this.gameState.darkCommunionInspired = true;
         await this.showMessage("MATSURIは何かを思い出しそうになった...");
         await this.showMessage("「黒の聖餐」という言葉が頭をよぎる...");
-        document.querySelector('#magic').textContent = "黒の聖餐";
-        document.querySelector('#magic').classList.add('special-skill');
+        document.getElementById('magic').textContent = "黒の聖餐";
+        document.getElementById('magic').classList.add('special-skill');
     }
 
     async showSpecialEnding() {
@@ -400,8 +354,8 @@ class YumeAiFantasy {
         this.hideElement('battle-screen');
         this.showElement('ending-screen');
         
-        document.querySelector('#ending-title').textContent = "TRUE END";
-        document.querySelector('#ending-message').textContent = 
+        document.getElementById('ending-title').textContent = "TRUE END";
+        document.getElementById('ending-message').textContent = 
             "MATSURIは吸血鬼の呪いを解き、新たな冒険へと旅立つ...";
         
         this.showElement('ending-choices');
@@ -410,12 +364,12 @@ class YumeAiFantasy {
     showGameOver(message) {
         this.hideElement('battle-screen');
         this.showElement('gameover-screen');
-        document.querySelector('#gameover-message').textContent = message;
+        document.getElementById('gameover-message').textContent = message;
     }
 
     showMessage(text) {
         return new Promise(resolve => {
-            const messageWindow = document.querySelector('#message-text');
+            const messageWindow = document.getElementById('message-text');
             messageWindow.style.opacity = '0';
             
             setTimeout(() => {
@@ -427,22 +381,22 @@ class YumeAiFantasy {
     }
 
     hideElement(id) {
-        document.querySelector(`#${id}`).classList.add('hidden');
+        document.getElementById(id).classList.add('hidden');
     }
 
     showElement(id) {
-        document.querySelector(`#${id}`).classList.remove('hidden');
+        document.getElementById(id).classList.remove('hidden');
     }
 
     updateStatus() {
         const updateBar = (current, max, barId) => {
-            const bar = document.querySelector(`#${barId}`);
+            const bar = document.getElementById(barId);
             const percentage = (current / max) * 100;
             bar.style.width = `${percentage}%`;
         };
 
-        document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
-        document.querySelector('#matsuri-mp').textContent = this.gameState.matsuri.mp;
+        document.getElementById('matsuri-hp').textContent = this.gameState.matsuri.hp;
+        document.getElementById('matsuri-mp').textContent = this.gameState.matsuri.mp;
 
         updateBar(this.gameState.matsuri.hp, this.gameState.matsuri.maxHp, 'matsuri-hp-bar');
         updateBar(this.gameState.matsuri.mp, this.gameState.matsuri.maxMp, 'matsuri-mp-bar');
@@ -459,5 +413,5 @@ class YumeAiFantasy {
 
 // ゲーム開始
 document.addEventListener('DOMContentLoaded', () => {
-    new YumeAiFantasy();
+    window.game = new YumeAiFantasy();
 });
