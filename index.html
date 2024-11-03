@@ -2,58 +2,92 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yume Ai Fantasy - 改善版</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yume Ai Fantasy</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
+        <!-- ローディング画面 -->
         <div id="loading-screen">
             <div class="loading-spinner"></div>
-            <p>Loading...</p>
+            <div class="loading-text">Loading...</div>
         </div>
-        
-        <div id="title-screen" class="screen">
-            <h1>Yume Ai Fantasy</h1>
-            <div class="start-button">Touch to Start</div>
+
+        <!-- タイトル画面 -->
+        <div id="title-screen" class="hidden">
+            <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル" class="title-image">
+            <div id="start-message">Touch to Start</div>
         </div>
-        
-        <div id="main-game" class="screen hidden">
-            <div class="status-bar">
-                <div class="player-stats">
-                    <div class="hp-container">
-                        HP: <span id="current-hp">1000</span>/<span id="max-hp">1000</span>
-                        <div class="hp-bar"></div>
-                    </div>
-                    <div class="mp-container">
-                        MP: <span id="current-mp">100</span>/<span id="max-mp">100</span>
-                        <div class="mp-bar"></div>
-                    </div>
-                </div>
+
+        <!-- ストーリー画面 -->
+        <div id="story-screen" class="hidden">
+            <div id="story-text"></div>
+            <button id="next-button">Next</button>
+        </div>
+
+        <!-- 戦闘画面 -->
+        <div id="battle-screen" class="hidden">
+            <div class="battle-background">
+                <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
             </div>
             
-            <div class="story-container">
-                <div class="story-text"></div>
-            </div>
+            <div id="effect-layer"></div>
             
-            <div class="battle-container hidden">
-                <div class="enemy-container"></div>
-                <div class="battle-commands">
-                    <button class="battle-command" data-command="attack">たたかう</button>
-                    <button class="battle-command" data-command="magic">まほう</button>
-                    <button class="battle-command" data-command="talk">はなす</button>
-                    <button class="battle-command" data-command="escape">にげる</button>
+            <div id="characters">
+                <div id="matsuri-container" class="character-container matsuri">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" class="character">
+                    <div class="status-bars">
+                        <div class="hp-bar">
+                            <div id="matsuri-hp-bar" class="bar-fill"></div>
+                            <div class="bar-text">HP: <span id="matsuri-hp">1000</span>/1000</div>
+                        </div>
+                        <div class="mp-bar">
+                            <div id="matsuri-mp-bar" class="bar-fill"></div>
+                            <div class="bar-text">MP: <span id="matsuri-mp">100</span>/100</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="unknown-container" class="character-container unknown">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" class="character">
                 </div>
             </div>
+
+            <div id="message-window">
+                <div id="message-text"></div>
+            </div>
+
+            <div id="command-window">
+                <button id="attack" class="command-button">たたかう</button>
+                <button id="magic" class="command-button">まほう</button>
+                <button id="talk" class="command-button">はなす</button>
+                <button id="escape" class="command-button">にげる</button>
+            </div>
+
+            <div id="dark-communion-effects" class="hidden"></div>
         </div>
-        
-        <div id="game-menu" class="hidden">
-            <button id="save-game">セーブ</button>
-            <button id="load-game">ロード</button>
-            <button id="settings">設定</button>
+
+        <!-- エンディング画面 -->
+        <div id="ending-screen" class="hidden">
+            <div class="ending-content">
+                <div id="ending-title"></div>
+                <div id="ending-story"></div>
+                <div id="ending-message"></div>
+                <div id="ending-choices" class="hidden">
+                    <button id="retry-ending">もういちど</button>
+                    <button id="visit-site">MATSURIの公式HPへ</button>
+                </div>
+            </div>
+            <div class="ending-particles"></div>
+        </div>
+
+        <!-- ゲームオーバー画面 -->
+        <div id="gameover-screen" class="hidden">
+            <div id="gameover-message"></div>
+            <button id="retry-gameover">もういちど</button>
         </div>
     </div>
+
     <script src="game.js"></script>
 </body>
 </html>
