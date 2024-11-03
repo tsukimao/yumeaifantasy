@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Yume Ai Fantasy</title>
+    <style>
+        body {
+            background: url('https://tsukimao.github.io/yumeaifantasy/BG.png') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            overflow: hidden;
+        }
+        #titleScreen, #battleScreen {
+            display: none;
+        }
+        .character {
+            position: absolute;
+            width: 100px;
+            height: auto;
+        }
+        #hero {
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 100px;
+        }
+        #boss {
+            left: 0;
+            bottom: 100px;
+        }
+        #commands {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+        }
+        #messages {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            width: 300px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        #status {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        #story {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 300px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id='titleScreen'>
+        <img src='https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif' onclick='startGame()' />
+    </div>
+    <div id='battleScreen'>
+        <img src='https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png' id='hero' class='character'>
+        <img src='https://tsukimao.github.io/yumeaifantasy/boss.png' id='boss' class='character'>
+        <div id='commands'>
+            <button onclick='attack()'>たたかう</button>
+            <button onclick='talk()'>はなす</button>
+            <button onclick='castMagic()'>まほう</button>
+            <button onclick='runAway()'>にげる</button>
+        </div>
+        <div id='messages'></div>
+        <div id='status'>
+            MATSURI: HP: <span id='heroHP'>100</span> MP: <span id='heroMP'>50</span>
+        </div>
+        <div id='story'></div>
+    </div>
+    <script>
+        let heroHP = 100;
+        let heroMP = 50;
+        let bossHP = 200;
+        let bossDamage = 0;
+        let gameState = 'title';
+        let storyIndex = 0;
+        let attackCount = 0;
+        let vampireStories = [
+            "私は吸血鬼だ。人間をゾンビに変える力を持つ。",
+            "昔、私は美しい花嫁だった。だが、運命は私を吸血鬼へと変えた。",
+            "吸血鬼は永遠の命を持つ。しかし、心は死ぬ。",
+            "この世界には多くの吸血鬼が存在する。私はその中でも最強だ。",
+            "伝説では、吸血鬼は夜にのみ活動する。しかし、私は日中でも活動できる。",
+            "吸血鬼は聖水や十字架に弱い。だが、それはただの迷信だ。",
+        ];
+
+        const story_parts = [
+            "MATSURIはデジタルワールドの調査員。ある日、怪しい影を追いかけてUNKNOWNと出会いました。",
+            "UNKNOWNは、被害者の血を吸い、ゾンビに変えると噂される化け物です。",
+            "最初は攻撃してきませんが、余裕を見せています。",
+            "MATSURIは戦うか、話すか、魔法を使うか、逃げるかを賢く選ばなければなりません。",
+            "MATSURIが戦うと、UNKNOWNの暗い過去と吸血鬼の話を聞かされます。",
+            "行動ごとに、UNKNOWNが真の力を明らかにしてきます。",
+            "MATSURIがダメージを与えると、UNKNOWNは嘘の吸血鬼話でMATSURIの血を吸おうとしてきます。",
+            "MATSURIが吸血鬼の弱点を見出し、最後のコマンド選択で攻撃しようとしたところ、UNKNOWNは逃げました。",
+        ];
+
+        function startGame() {
+            document.getElementById('titleScreen').style.display = 'none';
+            document.getElementById('battleScreen').style.display = 'block';
+            gameState = 'battle';
+            displayStory();
+            updateStatus();
+        }
+
+        function displayStory() {
+            if (storyIndex < story_parts.length) {
+                document.getElementById('story').innerHTML = story_parts[storyIndex];
+                storyIndex++;
+            }
+        }
+
+        function attack() {
+            if (gameState === 'battle') {
+                document.getElementById('messages').innerHTML = 'MATSURI attacks UNKNOWN!<br>';
+                bossHP -= 20;
+                bossDamage += 20;
+                attackCount++;
+                if (bossDamage >= 100) {
+                    endGame();
+                } else if (attackCount >= 2 && bossDamage >= 50) {
+                    displayStory();
+                    bossAttack();
+                }
+                updateStatus();
+            }
+        }
+
+        function castMagic() {
+            if (gameState === 'battle' && heroMP >= 10) {
+                document.getElementById('messages').innerHTML = 'MATSURI casts magic!<br>';
+                bossHP -= 40;
+                bossDamage += 40;
+                heroMP -= 10;
+                if (bossDamage >= 100) {
+                    endGame();
+                } else if (bossDamage >= 50) {
+                    displayStory();
+                }
+                updateStatus();
+            }
+        }
+
+        function talk() {
+            if (gameState === 'battle') {
+                let randomIndex = Math.floor(Math.random() * vampireStories.length);
+                document.getElementById('messages').innerHTML = vampireStories[randomIndex] + '<br>';
+                displayStory();
+            }
+        }
+
+        function runAway() {
+            if (gameState === 'battle') {
+                document.getElementById('messages').innerHTML = 'MATSURI runs away!<br>';
+                endGame();
+            }
+        }
+
+        function updateStatus() {
+            document.getElementById('heroHP').textContent = heroHP;
+            document.getElementById('heroMP').textContent = heroMP;
+        }
+
+        function bossAttack() {
+            if (gameState === 'battle') {
+                document.getElementById('messages').innerHTML = 'UNKNOWN tries to suck MATSURI\'s blood!<br>';
+                heroHP -= 30;
+                displayStory();
+                updateStatus();
+            }
+        }
+
+        function endGame() {
+            gameState = 'end';
+            displayStory();
+            document.getElementById('battleScreen').style.display = 'none';
+            document.body.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            document.getElementById('story').innerHTML = 'ゲームクリア';
+            document.getElementById('story').style.fontSize = '3em';
+        }
+    </script>
+</body>
+</html>
