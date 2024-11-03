@@ -2,7 +2,6 @@
 class YumeAiFantasy {
     constructor() {
         this.initializeGame();
-        this.bindEvents();
         this.preloadAssets();
     }
 
@@ -45,16 +44,8 @@ class YumeAiFantasy {
             "MATSURIは危険を感じた。この男は一体。",
             "戦闘を開始します。"
         ];
-    }
 
-    bindEvents() {
-        document.querySelector('#title-screen').addEventListener('click', () => this.startGame());
-        document.querySelector('#next-button').addEventListener('click', () => this.nextStory());
-        document.querySelector('#attack').addEventListener('click', () => this.handleAttack());
-        document.querySelector('#magic').addEventListener('click', () => this.handleMagic());
-        document.querySelector('#talk').addEventListener('click', () => this.handleTalk());
-        document.querySelector('#escape').addEventListener('click', () => this.handleEscape());
-        document.querySelector('#retry').addEventListener('click', () => this.resetGame());
+        this.bindEvents();
     }
 
     preloadAssets() {
@@ -67,9 +58,46 @@ class YumeAiFantasy {
             'yumeaimatsuri.png'
         ];
 
+        let loadedAssets = 0;
+        const totalAssets = assets.length;
+
         assets.forEach(asset => {
             const img = new Image();
+            img.onload = () => {
+                loadedAssets++;
+                if (loadedAssets === totalAssets) {
+                    this.hideElement('loading-screen');
+                    this.showElement('title-screen');
+                }
+            };
             img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
+        });
+    }
+
+    bindEvents() {
+        document.querySelector('#title-screen').addEventListener('click', () => this.startGame());
+        document.querySelector('#next-button').addEventListener('click', () => this.nextStory());
+        document.querySelector('#attack').addEventListener('click', () => this.handleAttack());
+        document.querySelector('#magic').addEventListener('click', () => this.handleMagic());
+        document.querySelector('#talk').addEventListener('click', () => this.handleTalk());
+        document.querySelector('#escape').addEventListener('click', () => this.handleEscape());
+        document.querySelector('#retry').addEventListener('click', () => this.resetGame());
+
+        // タッチデバイス対応
+        this.addTouchEvents();
+    }
+
+    addTouchEvents() {
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                button.classList.add('touched');
+            });
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                button.classList.remove('touched');
+            });
         });
     }
 
@@ -89,8 +117,12 @@ class YumeAiFantasy {
     }
 
     updateStory() {
-        document.querySelector('#story-text').textContent = 
-            this.storySequence[this.gameState.storyIndex];
+        const storyText = document.querySelector('#story-text');
+        storyText.style.opacity = '0';
+        setTimeout(() => {
+            storyText.textContent = this.storySequence[this.gameState.storyIndex];
+            storyText.style.opacity = '1';
+        }, 300);
     }
 
     startBattle() {
@@ -134,4 +166,135 @@ class YumeAiFantasy {
 
         setTimeout(() => {
             this.applyDamage(damage);
-            this.show
+            this.showRandomUnknownMessage();
+            this.gameState.isAnimating = false;
+            this.checkBattleStatus();
+        }, 1000);
+    }
+
+    handleTalk() {
+        if (this.gameState.isAnimating) return;
+        
+        if (this.gameState.isFinalPhase) {
+            this.showTrueEnding();
+        } else {
+            this.showRandomUnknownMessage();
+        }
+    }
+
+    handleEscape() {
+        this.showBadEnding("MATSURIは吸血鬼にされました");
+    }
+
+    showEffect(type) {
+        const effectLayer = document.querySelector('#effect-layer');
+        const effect = document.createElement('img');
+        effect.src = type === 'matsuri' ? 
+            'https://tsukimao.github.io/yumeaifantasy/matsuri.mahou.gif' :
+            'https://tsukimao.github.io/yumeaifantasy/boss.mahou.gif';
+        
+        effect.style.position = 'absolute';
+        effect.style.width = '100%';
+        effect.style.height = '100%';
+        effect.style.objectFit = 'contain';
+        
+        effectLayer.appendChild(effect);
+        
+        setTimeout(() => {
+            effect.remove();
+        }, 1000);
+    }
+
+    showDamageText(damage) {
+        const damageText = document.createElement('div');
+        damageText.className = 'damage-text';
+        damageText.textContent = damage;
+        damageText.style.left = '30%';
+        damageText.style.top = '40%';
+        
+        document.querySelector('#battle-screen').appendChild(damageText);
+        
+        setTimeout(() => {
+            damageText.remove();
+        }, 1000);
+    }
+
+    applyDamage(damage) {
+        this.gameState.unknown.hp = Math.max(0, this.gameState.unknown.hp - damage);
+        this.updateStatus();
+    }
+
+    showRandomUnknownMessage() {
+        const message = this.unknownMessages[Math.floor(Math.random() * this.unknownMessages.length)];
+        this.showMessage(message);
+    }
+
+    checkBattleStatus() {
+        if (this.gameState.unknown.hp <= 300 && !this.gameState.isFinalPhase) {
+            this.executeFinalPhase();
+        }
+        this.updateStatus();
+    }
+
+    executeFinalPhase() {
+        this.gameState.isFinalPhase = true;
+        this.showEffect('unknown');
+        this.gameState.matsuri.hp = 1;
+        this.showMessage("UNKNOWNの最後の攻撃！MATSURIのHPが1になった！");
+    }
+
+    showTrueEnding() {
+        this.showMessage("MATSURIは禁忌の魔法、グランドクロスを発動した！");
+        document.querySelector('#battle-screen').style.backgroundColor = 'white';
+        
+        setTimeout(() => {
+            this.showMessage("UNKNOWNの姿が消えていく...");
+            setTimeout(() => {
+                this.showEnding(true);
+            }, 2000);
+        }, 2000);
+    }
+
+    showBadEnding(message) {
+        this.showEnding(false, message);
+    }
+
+    showEnding(isTrue, message = null) {
+        const endingMessage = isTrue ? 
+            "MATSURIは引き続きUNKNOWNを探す旅に出る..." :
+            message;
+
+        document.querySelector('#ending-message').textContent = endingMessage;
+        this.hideElement('battle-screen');
+        this.showElement('ending-screen');
+    }
+
+    resetGame() {
+        location.reload();
+    }
+
+    showMessage(text) {
+        const messageWindow = document.querySelector('#message-window');
+        messageWindow.style.opacity = '0';
+        setTimeout(() => {
+            messageWindow.textContent = text;
+            messageWindow.style.opacity = '1';
+        }, 300);
+    }
+
+    hideElement(id) {
+        document.querySelector(`#${id}`).classList.add('hidden');
+    }
+
+    showElement(id) {
+        document.querySelector(`#${id}`).classList.remove('hidden');
+    }
+
+    updateStatus() {
+        document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
+        document.querySelector('#matsuri-mp').textContent = this.gameState.matsuri.mp;
+        document.querySelector('#unknown-hp').textContent = this.gameState.unknown.hp;
+    }
+}
+
+window.onload = () => new YumeAiFantasy();
