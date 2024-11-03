@@ -9,59 +9,117 @@
 </head>
 <body>
     <div id="game-container">
-        <div id="title-screen">
+        <!-- ローディング画面 -->
+        <div id="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text glow-text">Loading...</div>
+        </div>
+
+        <!-- タイトル画面 -->
+        <div id="title-screen" class="hidden">
             <img src="https://tsukimao.github.io/yumeaifantasy/YUMEAIFANTASY.title.gif" alt="タイトル" class="title-image">
-            <div id="start-message">タップしてスタート</div>
+            <div id="start-message" class="glow-text">Touch to Start</div>
         </div>
-        
+
+        <!-- ストーリー画面 -->
         <div id="story-screen" class="hidden">
-            <div id="story-text"></div>
-            <button id="next-button" class="game-button">次へ</button>
+            <div id="story-container">
+                <div id="story-text" class="fade-in"></div>
+                <button id="next-button" class="game-button glow-effect">Next</button>
+            </div>
         </div>
-        
+
+        <!-- 回想シーン画面 -->
+        <div id="flashback-screen" class="hidden">
+            <div class="flashback-overlay"></div>
+            <div id="flashback-container">
+                <div id="flashback-text" class="fade-in"></div>
+                <div id="master-dialogue" class="dialogue-box"></div>
+            </div>
+        </div>
+
+        <!-- 戦闘画面 -->
         <div id="battle-screen" class="hidden">
-            <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
+            <div class="battle-background">
+                <img src="https://tsukimao.github.io/yumeaifantasy/BG.png" alt="背景" class="background">
+            </div>
+            
+            <!-- キャラクター -->
             <div id="characters">
-                <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" id="matsuri" class="character">
-                <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" id="unknown" class="character">
+                <div id="matsuri-container" class="character-container">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/yumeaimatsuri.png" alt="MATSURI" id="matsuri" class="character">
+                </div>
+                <div id="unknown-container" class="character-container">
+                    <img src="https://tsukimao.github.io/yumeaifantasy/boss.png" alt="UNKNOWN" id="unknown" class="character">
+                </div>
             </div>
+
+            <!-- エフェクトレイヤー -->
             <div id="effect-layer"></div>
-            <div id="message-window"></div>
+            <div id="dark-communion-effect" class="hidden"></div>
+
+            <!-- メッセージウィンドウ -->
+            <div id="message-window" class="dialogue-box">
+                <div id="message-text"></div>
+            </div>
+
+            <!-- ステータスウィンドウ -->
             <div id="status-window">
-                <div class="status-item">
+                <div class="status-item matsuri-status">
                     <div class="status-name">MATSURI</div>
-                    <div class="status-values">
-                        <div>HP: <span id="matsuri-hp">1000</span></div>
-                        <div>MP: <span id="matsuri-mp">100</span></div>
+                    <div class="status-bars">
+                        <div class="hp-bar">
+                            <div class="bar-label">HP</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="matsuri-hp-bar"></div>
+                                <div class="bar-text"><span id="matsuri-hp">1000</span>/1000</div>
+                            </div>
+                        </div>
+                        <div class="mp-bar">
+                            <div class="bar-label">MP</div>
+                            <div class="bar-container">
+                                <div class="bar-fill" id="matsuri-mp-bar"></div>
+                                <div class="bar-text"><span id="matsuri-mp">100</span>/100</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="status-item">
+                <div class="status-item unknown-status">
                     <div class="status-name">UNKNOWN</div>
-                    <div class="status-values">
-                        <div>HP: <span id="unknown-hp">2000</span></div>
+                    <div class="status-bars">
+                        <div class="hp-bar">
+                            <div class="bar-container">
+                                <div class="bar-fill" id="unknown-hp-bar"></div>
+                                <div class="bar-text"><span id="unknown-hp">2000</span>/2000</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- コマンドウィンドウ -->
             <div id="command-window">
                 <button id="attack" class="command-button">たたかう</button>
                 <button id="magic" class="command-button">まほう</button>
                 <button id="talk" class="command-button">はなす</button>
                 <button id="escape" class="command-button">にげる</button>
+                <button id="dark-communion" class="command-button hidden special-skill">黒の聖餐</button>
             </div>
         </div>
-        
+
+        <!-- エンディング画面 -->
         <div id="ending-screen" class="hidden">
-            <div id="ending-message"></div>
-            <div id="ending-choices">
-                <button id="retry" class="game-button">もういっかい</button>
-                <a href="https://reverieneon71.my.canva.site/" target="_blank">
-                    <button class="game-button">MATSURIの公式ページ</button>
-                </a>
+            <div class="ending-overlay"></div>
+            <div class="ending-container">
+                <div id="ending-title" class="magical-text"></div>
+                <div id="ending-message" class="fade-in"></div>
+                <div id="ending-choices" class="hidden">
+                    <button id="retry" class="game-button glow-effect">もういちど</button>
+                    <a href="https://reverieneon71.my.canva.site/" target="_blank">
+                        <button class="game-button glow-effect">公式サイト</button>
+                    </a>
+                </div>
             </div>
-        </div>
-        <div id="loading-screen">
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Loading...</div>
         </div>
     </div>
     <script src="game.js"></script>
