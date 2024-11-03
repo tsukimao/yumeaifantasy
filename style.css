@@ -1,5 +1,118 @@
-/* style.cssに追加 */
-.effect {
+/* style.css */
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    color: white;
+}
+
+#game-container {
+    width: 800px;
+    height: 600px;
+    position: relative;
+    overflow: hidden;
+    background: #000;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#title-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#title-screen img {
+    max-width: 100%;
+    height: auto;
+}
+
+#start-message {
+    margin-top: 20px;
+    font-size: 24px;
+    animation: blink 1s infinite;
+}
+
+#story-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#story-text {
+    font-size: 20px;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#next-button {
+    padding: 10px 30px;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid white;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#next-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+#battle-screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: background-color 2s;
+}
+
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#characters {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+#matsuri {
+    position: absolute;
+    right: 100px;
+    bottom: 150px;
+    height: 200px;
+    transition: transform 0.3s ease;
+}
+
+#unknown {
+    position: absolute;
+    left: 100px;
+    bottom: 150px;
+    height: 200px;
+    transition: transform 0.3s ease;
+}
+
+#effect-layer {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -7,30 +120,91 @@
     z-index: 100;
 }
 
-#battle-screen {
-    transition: background-color 2s;
+#message-window {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    z-index: 101;
 }
 
-#ending-message {
+#status-window {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    z-index: 101;
+}
+
+#command-window {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 101;
+}
+
+#command-window button {
+    width: 150px;
+    padding: 10px;
+    font-size: 18px;
+    background: rgba(0, 0, 0, 0.8);
     color: white;
-    font-size: 24px;
-    text-align: center;
-    margin: 20px;
-}
-
-.fade {
-    animation: fadeEffect 2s;
-}
-
-@keyframes fadeEffect {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    border: 1px solid white;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 #command-window button:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
+}
+
+#ending-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+#ending-message {
+    font-size: 24px;
+    text-align: center;
+    margin: 20px;
+    animation: fadeIn 2s;
+}
+
+#ending-choices {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+#ending-choices button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid white;
+    color: white;
+    cursor: pointer;
     transition: all 0.3s ease;
+}
+
+#ending-choices button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
 }
 
 .damage-text {
@@ -39,6 +213,18 @@
     font-size: 24px;
     font-weight: bold;
     animation: floatUp 1s forwards;
+    z-index: 102;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes floatUp {
@@ -49,5 +235,22 @@
     to {
         transform: translateY(-50px);
         opacity: 0;
+    }
+}
+
+@media (max-width: 800px) {
+    #game-container {
+        width: 100vw;
+        height: 100vh;
+    }
+    
+    #command-window button {
+        width: 120px;
+        font-size: 16px;
+    }
+    
+    #message-window {
+        width: 90%;
+        font-size: 16px;
     }
 }
