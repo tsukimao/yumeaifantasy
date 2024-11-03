@@ -366,6 +366,26 @@ class YumeAiFantasy {
             const percentage = (current / max) * 100;
             bar.style.width = `${percentage}%`;
         };
+                // テキスト更新
+        document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
+        document.querySelector('#matsuri-mp').textContent = this.gameState.matsuri.mp;
+
+        // バー更新
+        updateBar(this.gameState.matsuri.hp, this.gameState.matsuri.maxHp, 'matsuri-hp-bar');
+        updateBar(this.gameState.matsuri.mp, this.gameState.matsuri.maxMp, 'matsuri-mp-bar');
+    }
+
+    wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    resetGame() {
+        location.reload();
+    }
+}
+
+// ゲーム開始
+window.onload = () => new YumeAiFantasy();
 
         // テキスト更新
         document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
