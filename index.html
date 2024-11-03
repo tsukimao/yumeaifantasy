@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Yume Ai Fantasy</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id='titleScreen' onclick='startGame()'>
-        <img src='images/YUMEAIFANTASY.title.gif' alt='タイトル画面'>
+        <img src='YUMEAIFANTASY.title.gif' alt='タイトル画面'>
     </div>
     <div id='battleScreen'>
-        <img src='images/yumeaimatsuri.png' id='hero' class='character'>
-        <img src='images/boss.png' id='boss' class='character'>
+        <img src='yumeaimatsuri.png' id='hero' class='character'>
+        <img src='boss.png' id='boss' class='character'>
         <div id='commands'>
             <button onclick='attack()' class='command-button'>たたかう</button>
             <button onclick='talk()' class='command-button'>はなす</button>
@@ -24,6 +24,9 @@
         </div>
         <div id='story'></div>
     </div>
-    <script src="js/main.js"></script>
+    <div id='clearScreen'>
+        <div id='clearMessage'></div>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html>
