@@ -24,7 +24,67 @@ class YumeAiFantasy {
             battleCount: 0
         };
 
-        this.storySequence = [
+        // 戦闘時の台詞
+        this.unknownBattleDialogues = [
+            "永遠の命は祝福ではなく、呪いだ。愛する者たちの死を何度も見続ける運命なのだから",
+            "時は流れ続け、私だけが取り残される。それが吸血鬼の宿命だ",
+            "月明かりの下で何百年も生きてきた。だが、心の渇きは癒えることはない",
+            "私の心臓は止まったまま。それでも、記憶だけは生き続ける",
+            "永遠の時を生きることは、永遠に別れを繰り返すこと",
+            "人間たちは私を怪物と呼ぶ。だが、彼らこそが時に最も残酷な存在だ",
+            "血を求める渇きは永遠に続く。それでも、人間の命の尊さを忘れたことはない",
+            "かつて人間だった記憶が薄れていく。それでも、人間の温もりだけは忘れられない",
+            "人間の血は私の命の源。しかし、それは同時に最大の罪",
+            "人間の世界で生きながら、決して人間になれない。これほどの皮肉があろうか",
+            "太陽は私の敵。だが、夜の闇は最高の同志だ",
+            "影の中でこそ、私たちは真の姿を見せる",
+            "月の光に照らされる時、私は最も美しく、そして最も危険な存在となる",
+            "夜の帳が下りる時、私の真の生が始まる",
+            "闇は私の母であり、月は私の父",
+            "人から吸血鬼への変容は、千の針で心を刺すような痛みだった",
+            "最初の血の味を忘れない。あの瞬間、私は人間性を失った",
+            "変貌の夜、私は人としての全てを失い、永遠の命を得た",
+            "人間の姿を保っているが、内なる獣は常に血を求めている",
+            "変身の痛みは永遠に続く。それは私の罪の印"
+        ];
+
+        // 会話時の台詞
+        this.unknownTalkDialogues = [
+            "世紀を超えて生きる者には、記憶が重荷となる",
+            "私の記憶は古い図書館のよう。数え切れない物語で満ちている",
+            "時代は移り変わる。だが、私の姿だけは永遠に変わらない",
+            "何百年もの記憶が重なり、時には自分が誰だったのかも分からなくなる",
+            "過去の記憶は私を苦しめる。しかし、それは私の一部",
+            "不死の力を持つことは、永遠の責任を負うこと",
+            "私の力は呪いであり、同時に祝福でもある",
+            "人間より強く、神より弱い。それが私たちの定め",
+            "力を持つことは、常に選択を迫られること",
+            "私の力は増すが、それと共に孤独も深まる",
+            "愛する者との別れは、永遠の命の中で最も辛い試練",
+            "人を愛することは許されない。それでも、心は愛を求める",
+            "永遠の命は、永遠の別れの連続",
+            "愛は私にとって最も危険な感情。それでも、抗うことはできない",
+            "愛する者の死を見届けること。それが私の永遠の宿命",
+            "この運命は選んだわけではない。だが、受け入れるしかなかった",
+            "運命の糸は血で染まっている。それが私の道",
+            "選択の自由はあっても、人間に戻る自由はない",
+            "運命は私を吸血鬼にした。しかし、私の行動は私が選ぶ",
+            "永遠の命は与えられた。だが、その使い方は私次第",
+            "誰も私の真の姿を知らない。それが吸血鬼の宿命だ",
+            "永遠の命を持つ者には、永遠の孤独が付きまとう",
+            "夜ごと街を彷徨う。だが、帰るべき場所はどこにもない",
+            "孤独は私の永遠の伴侶。最も忠実で、最も残酷な",
+            "世界は変わり続ける。だが、私の孤独だけは変わらない",
+            "永遠の闇の中にも、時として希望の光は見える",
+            "絶望の底で見つけた希望。それが私を支える",
+            "永遠の命は、新たな可能性への扉でもある",
+            "夜明けは来ない。しかし、それは必ずしも絶望を意味しない",
+            "永遠の命を持つ者にも、変化の可能性はある。それが私の希望"
+        ];
+
+        // その他の初期設定は同じ
+
+            this.storySequence = [
             "MATSURIは男を追い詰めた",
             "UNKNOWN: 『私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。』",
             "UNKNOWN: 『伝説では、吸血鬼は十字架や聖水に弱いとされている。しかし、それは迷信だ。』",
@@ -33,27 +93,6 @@ class YumeAiFantasy {
             "MATSURIは危険を感じた。この男は一体。",
             "戦闘を開始します。"
         ];
-
-        this.vampireDialogues = {
-            normal: [
-                "永遠の命には、永遠の孤独が伴う...",
-                "人の血を求めることは、呪いであり祝福でもある。",
-                "月明かりは私たちの母。太陽は私たちの敵。",
-                "私たちは死と生の狭間に存在する者たち..."
-            ],
-            wounded: [
-                "何百年もの時を生きてきた。その代償として愛する者への苦しみを知る。",
-                "吸血鬼は一族を形成し、かつて世界を支配していた。今は...",
-                "私たちは完全な死も、完全な生も許されない存在...",
-                "永遠の命は、永遠の孤独という代償を伴う..."
-            ],
-            desperate: [
-                "この痛みですら、永遠の時の中では一瞬の煌めきに過ぎない...",
-                "私は死ねない。それが最大の呪いだ。",
-                "永遠の命を得た代償に、すべての愛する者を失った...",
-                "人の血を求める呪いから、解放されることはないのか..."
-            ]
-        };
 
         this.darkCommunionEvent = [
             "MATSURIは禁忌の魔法を思い出した...",
@@ -84,68 +123,29 @@ class YumeAiFantasy {
         let loadedAssets = 0;
         const totalAssets = assets.length;
 
+        const onLoadComplete = () => {
+            loadedAssets++;
+            if (loadedAssets === totalAssets) {
+                this.hideElement('loading-screen');
+                this.showElement('title-screen');
+                this.gameState.currentScene = 'title';
+            }
+        };
+
         assets.forEach(asset => {
             const img = new Image();
-            img.onload = () => {
-                loadedAssets++;
-                if (loadedAssets === totalAssets) {
-                    this.hideElement('loading-screen');
-                    this.showElement('title-screen');
-                    this.gameState.currentScene = 'title';
-                }
-            };
+            img.onload = onLoadComplete;
+            img.onerror = onLoadComplete;
             img.src = `https://tsukimao.github.io/yumeaifantasy/${asset}`;
         });
-    }
 
-    bindEvents() {
-        document.querySelector('#title-screen').addEventListener('click', () => this.startGame());
-        document.querySelector('#next-button').addEventListener('click', () => this.nextStory());
-        document.querySelector('#attack').addEventListener('click', () => this.handleAttack());
-        document.querySelector('#magic').addEventListener('click', () => this.handleMagic());
-        document.querySelector('#talk').addEventListener('click', () => this.handleTalk());
-        document.querySelector('#escape').addEventListener('click', () => this.handleEscape());
-        document.querySelector('#retry').addEventListener('click', () => this.resetGame());
-        document.querySelector('#retry-gameover').addEventListener('click', () => this.resetGame());
-    }
-
-    async startGame() {
-        if (this.gameState.currentScene !== 'title') return;
-        this.hideElement('title-screen');
-        this.showElement('story-screen');
-        this.gameState.currentScene = 'story';
-        await this.updateStory();
-    }
-
-    async nextStory() {
-        if (this.gameState.isAnimating) return;
-        
-        this.gameState.storyIndex++;
-        if (this.gameState.storyIndex < this.storySequence.length) {
-            await this.updateStory();
-        } else {
-            this.startBattle();
-        }
-    }
-
-    async updateStory() {
-        this.gameState.isAnimating = true;
-        const storyText = document.querySelector('#story-text');
-        storyText.style.opacity = '0';
-        
-        await this.wait(300);
-        storyText.textContent = this.storySequence[this.gameState.storyIndex];
-        storyText.style.opacity = '1';
-        
-        this.gameState.isAnimating = false;
-    }
-
-    startBattle() {
-        this.hideElement('story-screen');
-        this.showElement('battle-screen');
-        this.gameState.currentScene = 'battle';
-        this.updateStatus();
-        this.showMessage("コマンドを選択してください。");
+        setTimeout(() => {
+            if (this.gameState.currentScene === 'loading') {
+                this.hideElement('loading-screen');
+                this.showElement('title-screen');
+                this.gameState.currentScene = 'title';
+            }
+        }, 5000);
     }
 
     async handleAttack() {
@@ -158,8 +158,14 @@ class YumeAiFantasy {
         await this.showAttackAnimation('matsuri');
         this.showDamageText(damage);
         await this.applyDamage(damage);
-        await this.showRandomUnknownMessage();
-        
+
+        if (this.gameState.battleCount >= 30) {
+            await this.showMessage("UNKNOWN: 『もう十分だ。お前の血を頂こう...』");
+            this.showGameOver("MATSURIは吸血鬼にされました");
+            return;
+        }
+
+        await this.showBattleMessage();
         this.gameState.isAnimating = false;
         this.checkBattleStatus();
     }
@@ -177,7 +183,7 @@ class YumeAiFantasy {
         let damage;
 
         if (this.gameState.darkCommunionInspired) {
-            damage = this.gameState.unknown.hp;  // 必殺の一撃
+            damage = this.gameState.unknown.hp;
             await this.executeDarkCommunion();
         } else {
             damage = Math.floor(Math.random() * 200) + 100;
@@ -188,10 +194,16 @@ class YumeAiFantasy {
         this.showDamageText(damage);
         await this.applyDamage(damage);
 
+        if (this.gameState.battleCount >= 30) {
+            await this.showMessage("UNKNOWN: 『もう十分だ。お前の血を頂こう...』");
+            this.showGameOver("MATSURIは吸血鬼にされました");
+            return;
+        }
+
         if (this.gameState.darkCommunionInspired) {
             await this.showSpecialEnding();
         } else {
-            await this.showRandomUnknownMessage();
+            await this.showBattleMessage();
             this.gameState.isAnimating = false;
             this.checkBattleStatus();
         }
@@ -201,16 +213,37 @@ class YumeAiFantasy {
         if (this.gameState.isAnimating) return;
         
         this.gameState.battleCount++;
+        
+        if (this.gameState.battleCount >= 30) {
+            await this.showMessage("UNKNOWN: 『もう十分だ。お前の血を頂こう...』");
+            this.showGameOver("MATSURIは吸血鬼にされました");
+            return;
+        }
+
         if (this.gameState.isFinalPhase) {
             await this.showMessage("ただの会話ではこの男を倒せないようだ...");
         } else {
-            await this.showRandomUnknownMessage();
+            await this.showTalkMessage();
         }
         this.checkBattleStatus();
     }
 
     handleEscape() {
         this.showGameOver("MATSURIは吸血鬼にされました");
+    }
+
+    async showBattleMessage() {
+        const message = this.unknownBattleDialogues[
+            Math.floor(Math.random() * this.unknownBattleDialogues.length)
+        ];
+        await this.showMessage(`UNKNOWN: 『${message}』`);
+    }
+
+    async showTalkMessage() {
+        const message = this.unknownTalkDialogues[
+            Math.floor(Math.random() * this.unknownTalkDialogues.length)
+        ];
+        await this.showMessage(`UNKNOWN: 『${message}』`);
     }
 
     async showAttackAnimation(character) {
@@ -229,6 +262,22 @@ class YumeAiFantasy {
         effectLayer.appendChild(effect);
         await this.wait(1000);
         effect.remove();
+    }
+
+    async executeDarkCommunion() {
+        const flashLayer = document.querySelector('#flash-layer');
+        
+        for (const text of this.darkCommunionEvent) {
+            await this.showMessage(text);
+            await this.wait(1000);
+        }
+
+        flashLayer.classList.remove('hidden');
+        flashLayer.classList.add('flash');
+        await this.showMagicAnimation('matsuri');
+        await this.wait(1000);
+        flashLayer.classList.remove('flash');
+        flashLayer.classList.add('hidden');
     }
 
     showDamageText(damage) {
@@ -252,30 +301,7 @@ class YumeAiFantasy {
         await this.wait(500);
     }
 
-    async showRandomUnknownMessage() {
-        const currentPhase = this.getCurrentPhase();
-        const messages = this.vampireDialogues[currentPhase];
-        const message = messages[Math.floor(Math.random() * messages.length)];
-        await this.showMessage(message);
-    }
-
-    getCurrentPhase() {
-        const hp = this.gameState.unknown.hp;
-        for (const [phase, values] of Object.entries(this.battlePhases)) {
-            if (hp <= values.hp && hp > values.threshold) {
-                return phase;
-            }
-        }
-        return 'normal';
-    }
-
     async checkBattleStatus() {
-        if (this.gameState.battleCount >= 30) {
-            await this.showMessage("UNKNOWN: もうそろそろお前も疲れただろう");
-            this.showGameOver("疲労により戦闘不能...");
-            return;
-        }
-
         if (this.gameState.unknown.hp <= 300 && !this.gameState.isFinalPhase) {
             await this.executeFinalPhase();
         } else if (this.gameState.unknown.hp <= 1000 && !this.gameState.darkCommunionInspired) {
@@ -302,25 +328,10 @@ class YumeAiFantasy {
         document.querySelector('#magic').classList.add('special-skill');
     }
 
-    async executeDarkCommunion() {
-        for (const text of this.darkCommunionEvent) {
-            await this.showMessage(text);
-            await this.wait(1000);
-        }
-
-        const flashLayer = document.querySelector('#flash-layer');
-        flashLayer.classList.remove('hidden');
-        flashLayer.classList.add('flash');
-        await this.showMagicAnimation('matsuri');
-        await this.wait(1000);
-        flashLayer.classList.remove('flash');
-        flashLayer.classList.add('hidden');
-    }
-
     async showSpecialEnding() {
         await this.showMessage("黒の聖餐の力が解き放たれた！");
         await this.showMessage("UNKNOWNの姿が光に包まれていく...");
-        await this.showMessage("UNKNOWN: ありがとう...やっと解放される...");
+        await this.showMessage("UNKNOWN: 『ありがとう...やっと解放される...』");
         
         this.hideElement('battle-screen');
         this.showElement('ending-screen');
@@ -360,17 +371,15 @@ class YumeAiFantasy {
     }
 
     updateStatus() {
-        // HP/MPバーの更新
         const updateBar = (current, max, barId) => {
             const bar = document.querySelector(`#${barId}`);
             const percentage = (current / max) * 100;
             bar.style.width = `${percentage}%`;
         };
-                // テキスト更新
+
         document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
         document.querySelector('#matsuri-mp').textContent = this.gameState.matsuri.mp;
 
-        // バー更新
         updateBar(this.gameState.matsuri.hp, this.gameState.matsuri.maxHp, 'matsuri-hp-bar');
         updateBar(this.gameState.matsuri.mp, this.gameState.matsuri.maxMp, 'matsuri-mp-bar');
     }
@@ -386,7 +395,3 @@ class YumeAiFantasy {
 
 // ゲーム開始
 window.onload = () => new YumeAiFantasy();
-
-        // テキスト更新
-        document.querySelector('#matsuri-hp').textContent = this.gameState.matsuri.hp;
-        document.querySelector('#matsuri-mp
