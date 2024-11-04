@@ -42,21 +42,32 @@ class YumeAiFantasy {
         }
     }
 
-    async preloadAssets() {
-        const assets = [
-            'YUMEAIFANTASY.title.gif',
-            'BG.png',
-            'yumeaimatsuri.png',
-            'boss.png'
-        ];
+// game.jsの一部を修正
+async preloadAssets() {
+    const assets = [
+        { key: 'title', file: 'YUMEAIFANTASY.title.gif' },
+        { key: 'background', file: 'BG.png' },
+        { key: 'matsuri', file: 'yumeaimatsuri.png' },
+        { key: 'boss', file: 'boss.png' }
+    ];
 
+    const loadingText = document.querySelector('.loading-text');
+    let loaded = 0;
+
+    try {
         for (const asset of assets) {
-            await this.assetManager.loadAsset(
-                asset,
-                `https://tsukimao.github.io/yumeaifantasy/${asset}`
-            );
+            await this.assetManager.loadAsset(asset.key, asset.file);
+            loaded++;
+            loadingText.textContent = `Loading... ${Math.floor((loaded / assets.length) * 100)}%`;
         }
+        // アセット読み込み完了後、タイトル画面に遷移
+        this.changeScene('title');
+    } catch (error) {
+        console.error('Asset loading failed:', error);
+        this.handleError(error);
     }
+}
+
 
     setupEventListeners() {
         document.addEventListener('click', (e) => {
