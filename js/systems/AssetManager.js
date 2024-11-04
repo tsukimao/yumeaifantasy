@@ -2,11 +2,12 @@
 class AssetManager {
     constructor() {
         this.assets = new Map();
+        this.baseUrl = 'https://tsukimao.github.io/yumeaifantasy/';
     }
 
-    async loadAsset(key, url) {
+    async loadAsset(key, filename) {
         try {
-            const img = await this.loadImage(url);
+            const img = await this.loadImage(this.baseUrl + filename);
             this.assets.set(key, img);
             return img;
         } catch (error) {
