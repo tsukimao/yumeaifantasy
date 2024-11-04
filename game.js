@@ -1,205 +1,221 @@
-// game.js
-class YumeAiFantasy {
-    constructor() {
-        this.gameState = {
-            currentScene: 'loading',
-            matsuri: {
-                hp: 1000,
-                maxHp: 1000,
-                mp: 100,
-                maxMp: 100
-            },
-            unknown: {
-                hp: 2000,
-                maxHp: 2000
-            },
-            battleCount: 0,
-            darkCommunionInspired: false
-        };
+import { gsap } from 'gsap';
 
-        // システムの初期化
-        this.assetManager = new AssetManager();
-        this.effectSystem = new EffectSystem(this);
-        this.soundSystem = new SoundSystem(this);
-        this.battleSystem = new BattleSystem(this);
-        this.storySystem = new StorySystem(this);
-        this.scoreSystem = new ScoreSystem(this);
-        this.saveSystem = new SaveSystem(this);
-        this.debugSystem = new DebugSystem(this);
+class AssetLoader {
+  constructor() {
+    this.assets = new Map();
+    this.baseUrl = 'https://tsukimao.github.io/yumeaifantasy';
+  }
 
-        this.init();
+  async loadImage(name) {
+    if (this.assets.has(name)) {
+      return this.assets.get(name);
     }
 
-    async init() {
-        try {
-            await this.preloadAssets();
-            await this.soundSystem.initialize();
-            this.setupEventListeners();
-            this.changeScene('title');
-        } catch (error) {
-            console.error('初期化エラー:', error);
-            this.handleError(error);
-        }
+    try {
+      const img = new Image();
+      const loadPromise = new Promise((resolve, reject) => {
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error(`Failed to load image: ${name}`));
+      });
+
+      img.src = `${this.baseUrl}/${name}`;
+      const loadedImg = await loadPromise;
+      this.assets.set(name, loadedImg);
+      return loadedImg;
+    } catch (error) {
+      console.error(`Error loading ${name}:`, error);
+      throw error;
     }
+  }
 
-    async preloadAssets() {
-        const assets = [
-            'YUMEAIFANTASY.title.gif',
-            'BG.png',
-            'yumeaimatsuri.png',
-            'boss.png'
-        ];
-
-        for (const asset of assets) {
-            await this.assetManager.loadAsset(
-                asset,
-                `https://tsukimao.github.io/yumeaifantasy/${asset}`
-            );
-        }
-    }
-
-    setupEventListeners() {
-        document.addEventListener('click', (e) => {
-            if (this.gameState.currentScene === 'title') {
-                this.startStory();
-            }
-        });
-
-        // 戦闘コマンドのイベントリスナー
-        const commandButtons = document.querySelectorAll('.command-button');
-        commandButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                if (this.gameState.currentScene === 'battle') {
-                    switch (index) {
-                        case 0: this.battleSystem.handleAttack(); break;
-                        case 1: this.battleSystem.handleMagic(); break;
-                        case 2: this.battleSystem.handleTalk(); break;
-                        case 3: this.battleSystem.handleEscape(); break;
-                    }
-                }
-            });
-        });
-    }
-
-    changeScene(sceneName) {
-        const screens = ['loading-screen', 'title-screen', 'story-screen', 'battle-screen', 'ending-screen'];
-        screens.forEach(screen => {
-            const element = document.getElementById(screen);
-            if (element) {
-                element.classList.add('hidden');
-            }
-        });
-
-        const newScreen = document.getElementById(`${sceneName}-screen`);
-        if (newScreen) {
-            newScreen.classList.remove('hidden');
-        }
-
-        this.gameState.currentScene = sceneName;
-        this.updateUI();
-    }
-
-    startStory() {
-        this.storySystem.start();
-    }
-
-    startBattle() {
-        this.changeScene('battle');
-        this.battleSystem.initializeBattle();
-    }
-
-    async executeAttack() {
-        const damage = Math.floor(Math.random() * 20) + 40;
-        await this.effectSystem.playEffect('attack');
-        await this.soundSystem.playSound('attack');
-        await this.dealDamage('unknown', damage);
-        this.scoreSystem.calculateBattleScore(damage);
-    }
-
-    async executeMagic() {
-        if (this.gameState.matsuri.mp >= 15) {
-            const damage = Math.floor(Math.random() * 200) + 100;
-            this.gameState.matsuri.mp -= 15;
-            await this.effectSystem.playEffect('magic');
-            await this.soundSystem.playSound('magic');
-            await this.dealDamage('unknown', damage);
-            this.scoreSystem.calculateBattleScore(damage);
-            this.updateStatus();
-        }
-    }
-
-    async executeDarkCommunion() {
-        const damage = this.gameState.unknown.hp;
-        this.gameState.darkCommunionInspired = true;
-        await this.effectSystem.playDarkCommunionEffect();
-        await this.soundSystem.playDarkCommunionSound();
-        await this.dealDamage('unknown', damage);
-        this.scoreSystem.calculateDarkCommunionBonus();
-    }
-
-    async dealDamage(target, amount) {
-        const targetChar = this.gameState[target];
-        targetChar.hp = Math.max(0, targetChar.hp - amount);
-        await this.effectSystem.showDamageNumber(amount);
-        this.updateStatus();
-    }
-
-    updateUI() {
-        if (this.gameState.currentScene === 'battle') {
-            this.updateStatus();
-        }
-    }
-
-    updateStatus() {
-        const hpBar = document.getElementById('hp-bar');
-        const mpBar = document.getElementById('mp-bar');
-        
-        if (hpBar) {
-            hpBar.textContent = `HP: ${this.gameState.matsuri.hp}/${this.gameState.matsuri.maxHp}`;
-        }
-        if (mpBar) {
-            mpBar.textContent = `MP: ${this.gameState.matsuri.mp}/${this.gameState.matsuri.maxMp}`;
-        }
-    }
-
-    async showEnding() {
-        this.changeScene('ending');
-        await this.storySystem.showEndingSequence();
-        this.saveSystem.saveScore(this.scoreSystem.getScore());
-    }
-
-    gameOver() {
-        this.changeScene('ending');
-        document.getElementById('ending-text').textContent = 'MATSURIは吸血鬼にされました';
-    }
-
-    handleError(error) {
-        console.error('ゲームエラー:', error);
-        const errorMessage = document.createElement('div');
-        errorMessage.className = 'error-message';
-        errorMessage.textContent = 'エラーが発生しました。ページを更新してください。';
-        document.body.appendChild(errorMessage);
-    }
-
-    // デバッグ用メソッド
-    debug() {
-        return {
-            state: this.gameState,
-            forceScene: (sceneName) => this.changeScene(sceneName),
-            setHP: (target, value) => {
-                this.gameState[target].hp = value;
-                this.updateStatus();
-            },
-            setMP: (value) => {
-                this.gameState.matsuri.mp = value;
-                this.updateStatus();
-            },
-            triggerDarkCommunion: () => this.executeDarkCommunion()
-        };
-    }
+  getAsset(name) {
+    return this.assets.get(name);
+  }
 }
 
-// ゲームの初期化
+class GameState {
+  constructor() {
+    this.currentScene = 'loading';
+    this.storyIndex = 0;
+    this.matsuri = {
+      hp: 1000,
+      maxHp: 1000,
+      mp: 100,
+      maxMp: 100
+    };
+    this.unknown = {
+      hp: 2000,
+      maxHp: 2000
+    };
+    this.battleCount = 0;
+    this.darkCommunionInspired = false;
+  }
+}
+
+class YumeAiFantasy {
+  constructor() {
+    this.assetLoader = new AssetLoader();
+    this.gameState = new GameState();
+    this.isInitialized = false;
+    this.requiredAssets = [
+      'YUMEAIFANTASY.title.gif',
+      'BG.png',
+      'yumeaimatsuri.png',
+      'boss.png'
+    ];
+  }
+
+  async init() {
+    try {
+      await this.preloadAssets();
+      this.setupEventListeners();
+      this.isInitialized = true;
+      this.showTitleScreen();
+    } catch (error) {
+      console.error('Initialization error:', error);
+      this.handleInitializationError(error);
+    }
+  }
+
+  async preloadAssets() {
+    try {
+      const loadPromises = this.requiredAssets.map(asset => 
+        this.assetLoader.loadImage(asset)
+      );
+      await Promise.all(loadPromises);
+      return true;
+    } catch (error) {
+      throw new Error(`Asset loading failed: ${error.message}`);
+    }
+  }
+
+  setupEventListeners() {
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('command-button')) {
+        const command = e.target.dataset.command;
+        this.handleCommand(command);
+      }
+    });
+
+    window.addEventListener('error', (e) => {
+      console.error('Runtime error:', e);
+      this.handleRuntimeError(e);
+    });
+  }
+
+  showTitleScreen() {
+    if (!this.isInitialized) {
+      console.error('Game not initialized');
+      return;
+    }
+
+    this.gameState.currentScene = 'title';
+    const gameScreen = document.getElementById('game-screen');
+    const loadingScreen = document.getElementById('loading-screen');
+
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+    
+    if (gameScreen) {
+      gameScreen.classList.remove('hidden');
+      
+      const backgroundLayer = document.getElementById('background-layer');
+      if (backgroundLayer) {
+        const titleImage = this.assetLoader.getAsset('YUMEAIFANTASY.title.gif');
+        if (titleImage) {
+          backgroundLayer.style.backgroundImage = `url(${titleImage.src})`;
+          backgroundLayer.style.backgroundSize = 'cover';
+          backgroundLayer.style.backgroundPosition = 'center';
+        }
+      }
+      
+      const touchToStart = document.createElement('div');
+      touchToStart.textContent = 'Touch to Start';
+      touchToStart.style.cssText = `
+        position: absolute;
+        bottom: 20%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: clamp(16px, 3vw, 24px);
+        color: white;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        animation: blink 1s infinite;
+      `;
+      gameScreen.appendChild(touchToStart);
+
+      const startHandler = () => {
+        if (this.gameState.currentScene === 'title') {
+          touchToStart.remove();
+          gameScreen.removeEventListener('click', startHandler);
+          this.startStory();
+        }
+      };
+
+      gameScreen.addEventListener('click', startHandler);
+    }
+  }
+
+  startStory() {
+    this.gameState.currentScene = 'story';
+    // Story implementation will be added in subsequent updates
+  }
+
+  handleCommand(command) {
+    if (!this.isInitialized) return;
+
+    switch (command) {
+      case 'attack':
+        this.handleAttack();
+        break;
+      case 'magic':
+        this.handleMagic();
+        break;
+      case 'talk':
+        this.handleTalk();
+        break;
+      case 'escape':
+        this.handleEscape();
+        break;
+    }
+  }
+
+  handleInitializationError(error) {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) {
+      loadingScreen.classList.add('hidden');
+    }
+
+    this.showErrorMessage('ゲームの初期化に失敗しました。ページを再読み込みしてください。');
+  }
+
+  handleRuntimeError(error) {
+    console.error('Runtime error:', error);
+    this.showErrorMessage('エラーが発生しました。ページを再読み込みしてください。');
+  }
+
+  showErrorMessage(message) {
+    const existingError = document.querySelector('.error-message');
+    if (existingError) {
+      existingError.remove();
+    }
+
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.innerHTML = `
+      <div class="error-content">
+        <p>${message}</p>
+        <button onclick="location.reload()">再読み込み</button>
+      </div>
+    `;
+    document.body.appendChild(errorDiv);
+  }
+}
+
+// Initialize game
 window.addEventListener('DOMContentLoaded', () => {
-    window.game = new YumeAiFantasy();
+  window.game = new YumeAiFantasy();
+  window.game.init().catch(error => {
+    console.error('Game initialization failed:', error);
+  });
 });

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YumeAiFantasy</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/src/styles/main.css">
 </head>
 <body>
     <div id="game-container">
@@ -13,45 +13,21 @@
             <div class="loading-text">Loading...</div>
         </div>
         
-        <div id="title-screen" class="hidden">
-            <img id="title-image" src="" alt="YumeAiFantasy">
-            <div id="start-text">Touch to Start</div>
-        </div>
-
-        <div id="story-screen" class="hidden">
-            <div id="story-text"></div>
-            <button id="next-button">Next</button>
-        </div>
-        
-        <div id="battle-screen" class="hidden">
-            <div id="status-bars">
-                <div id="hp-bar">HP: 1000/1000</div>
-                <div id="mp-bar">MP: 100/100</div>
-            </div>
-            <div id="battle-commands">
-                <button class="command-button">たたかう</button>
-                <button class="command-button">まほう</button>
-                <button class="command-button">はなす</button>
-                <button class="command-button">にげる</button>
-            </div>
-        </div>
-
-        <div id="ending-screen" class="hidden">
-            <div id="ending-text"></div>
-            <div id="ending-buttons">
-                <button id="retry-button">もういちど</button>
-                <button id="hp-button">MATSURIの公式HPへ</button>
-            </div>
+        <div id="game-screen" style="display: none;">
+            <div id="background-layer"></div>
+            <div id="character-layer"></div>
+            <div id="ui-layer"></div>
         </div>
     </div>
-
-    <script src="js/systems/AssetManager.js"></script>
-    <script src="js/systems/EffectSystem.js"></script>
-    <script src="js/systems/SoundSystem.js"></script>
-    <script src="js/systems/StorySystem.js"></script>
-    <script src="js/systems/BattleSystem.js"></script>
-    <script src="js/systems/SaveSystem.js"></script>
-    <script src="js/systems/DebugSystem.js"></script>
-    <script src="js/game.js"></script>
+    <script type="module">
+        import { YumeAiFantasy } from './src/Game.js';
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            window.game = new YumeAiFantasy();
+            window.game.init().catch(error => {
+                console.error('Game initialization failed:', error);
+            });
+        });
+    </script>
 </body>
 </html>
