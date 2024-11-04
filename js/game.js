@@ -17,19 +17,23 @@ class YumeAiFantasy {
             darkCommunionInspired: false
         };
 
+        // システムの初期化
         this.assetManager = new AssetManager();
         this.effectSystem = new EffectSystem(this);
-        this.soundSystem = new SoundSystem();
+        this.soundSystem = new SoundSystem(this);
         this.battleSystem = new BattleSystem(this);
         this.storySystem = new StorySystem(this);
         this.scoreSystem = new ScoreSystem(this);
-        
+        this.saveSystem = new SaveSystem(this);
+        this.debugSystem = new DebugSystem(this);
+
         this.init();
     }
 
     async init() {
         try {
             await this.preloadAssets();
+            await this.soundSystem.initialize();
             this.setupEventListeners();
             this.changeScene('title');
         } catch (error) {
@@ -104,6 +108,42 @@ class YumeAiFantasy {
         this.battleSystem.initializeBattle();
     }
 
+    async executeAttack() {
+        const damage = Math.floor(Math.random() * 20) + 40;
+        await this.effectSystem.playEffect('attack');
+        await this.soundSystem.playSound('attack');
+        await this.dealDamage('unknown', damage);
+        this.scoreSystem.calculateBattleScore(damage);
+    }
+
+    async executeMagic() {
+        if (this.gameState.matsuri.mp >= 15) {
+            const damage = Math.floor(Math.random() * 200) + 100;
+            this.gameState.matsuri.mp -= 15;
+            await this.effectSystem.playEffect('magic');
+            await this.soundSystem.playSound('magic');
+            await this.dealDamage('unknown', damage);
+            this.scoreSystem.calculateBattleScore(damage);
+            this.updateStatus();
+        }
+    }
+
+    async executeDarkCommunion() {
+        const damage = this.gameState.unknown.hp;
+        this.gameState.darkCommunionInspired = true;
+        await this.effectSystem.playDarkCommunionEffect();
+        await this.soundSystem.playDarkCommunionSound();
+        await this.dealDamage('unknown', damage);
+        this.scoreSystem.calculateDarkCommunionBonus();
+    }
+
+    async dealDamage(target, amount) {
+        const targetChar = this.gameState[target];
+        targetChar.hp = Math.max(0, targetChar.hp - amount);
+        await this.effectSystem.showDamageNumber(amount);
+        this.updateStatus();
+    }
+
     updateUI() {
         if (this.gameState.currentScene === 'battle') {
             this.updateStatus();
@@ -125,6 +165,7 @@ class YumeAiFantasy {
     async showEnding() {
         this.changeScene('ending');
         await this.storySystem.showEndingSequence();
+        this.saveSystem.saveScore(this.scoreSystem.getScore());
     }
 
     gameOver() {
@@ -138,6 +179,23 @@ class YumeAiFantasy {
         errorMessage.className = 'error-message';
         errorMessage.textContent = 'エラーが発生しました。ページを更新してください。';
         document.body.appendChild(errorMessage);
+    }
+
+    // デバッグ用メソッド
+    debug() {
+        return {
+            state: this.gameState,
+            forceScene: (sceneName) => this.changeScene(sceneName),
+            setHP: (target, value) => {
+                this.gameState[target].hp = value;
+                this.updateStatus();
+            },
+            setMP: (value) => {
+                this.gameState.matsuri.mp = value;
+                this.updateStatus();
+            },
+            triggerDarkCommunion: () => this.executeDarkCommunion()
+        };
     }
 }
 
