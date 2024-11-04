@@ -64,7 +64,7 @@ body, html {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    font-size: 24px;
+    font-size: clamp(18px, 3vw, 24px);
     line-height: 1.6;
 }
 
@@ -138,7 +138,7 @@ body, html {
     background: rgba(0, 0, 0, 0.95);
     border: 2px solid rgba(255, 255, 255, 0.8);
     padding: 20px;
-    font-size: 18px;
+    font-size: clamp(16px, 3vw, 18px);
 }
 
 #command-window {
@@ -221,8 +221,8 @@ body, html {
         width: 35%;
     }
     #message-window {
-        width: 95%;
         bottom: 110px;
+        width: 95%;
     }
     .command-button {
         padding: 12px;
