@@ -1,0 +1,253 @@
+/* style.css */
+/* 基本スタイル */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #fff;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ローディング画面 */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #fff;
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #fff;
+}
+
+/* タイトル画面 */
+#title-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+#title-image {
+    max-width: 80%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+#start-text {
+    margin-top: 30px;
+    font-size: clamp(16px, 3vw, 24px);
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: blink 1s infinite;
+}
+
+/* 戦闘画面 */
+#battle-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: url('BG.png') center/cover;
+}
+
+#status-bars {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 200px;
+}
+
+.status-bar {
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #fff;
+    border-radius: 6px;
+    height: 12px;
+    overflow: hidden;
+}
+
+#hp-bar .bar {
+    background: linear-gradient(to right, #ff0000, #ff6666);
+}
+
+#mp-bar .bar {
+    background: linear-gradient(to right, #0066ff, #66a3ff);
+}
+
+.bar {
+    height: 100%;
+    width: 100%;
+    transition: width 0.3s ease;
+}
+
+#battle-commands {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 80%;
+    max-width: 400px;
+}
+
+.command-button {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #fff;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 16px;
+}
+
+.command-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* キャラクター */
+.character {
+    position: absolute;
+    bottom: 20%;
+}
+
+.character.matsuri {
+    right: 10%;
+    width: 25%;
+}
+
+.character.unknown {
+    left: 10%;
+    width: 40%;
+}
+
+/* エフェクト */
+.flash-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9998;
+}
+
+.shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* エンディング画面 */
+#ending-screen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.ending-text {
+    font-size: 24px;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    padding: 0 20px;
+}
+
+/* アニメーション */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* ユーティリティクラス */
+.hidden {
+    display: none !important;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .character.matsuri {
+        width: 35%;
+    }
+    
+    #battle-commands {
+        width: 95%;
+    }
+    
+    .command-button {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    #story-text {
+        font-size: 18px;
+    }
+    
+    .command-button {
+        padding: 10px;
+        font-size: 12px;
+        min-height: 44px;
+    }
+    
+    .ending-text {
+        font-size: 18px;
+    }
+}
