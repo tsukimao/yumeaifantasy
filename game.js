@@ -177,8 +177,21 @@ class YumeAiFantasy {
                 }
             };
 
+            // タッチデバイスの最適化
+            const TOUCH_DELAY = 50;
+            let lastTap = 0;
+
             titleScreen.addEventListener('click', handleTitleClick);
-            titleScreen.addEventListener('touchend', handleTitleClick);
+            titleScreen.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                
+                if (tapLength < TOUCH_DELAY) return;
+                lastTap = currentTime;
+                
+                handleTitleClick(e);
+            }, { passive: false });
         }
 
         // ストーリー進行ボタン
@@ -254,29 +267,30 @@ class YumeAiFantasy {
     setupEffectSystem() {
         this.effectTypes = {
             FLASH: {
-                duration: 300,
+                duration: 200,
                 create: () => {
                     const flash = document.getElementById('screen-flash');
                     flash.classList.remove('hidden');
+                    flash.style.opacity = '0.7';
                     flash.classList.add('active');
                     setTimeout(() => {
                         flash.classList.remove('active');
                         flash.classList.add('hidden');
-                    }, 300);
+                    }, 200);
                 }
             },
             SHAKE: {
-                duration: 500,
+                duration: 400,
                 create: () => {
                     const container = document.getElementById('game-container');
                     container.classList.add('screen-shake');
                     setTimeout(() => {
                         container.classList.remove('screen-shake');
-                    }, 500);
+                    }, 400);
                 }
             },
             PARTICLES: {
-                duration: 1000,
+                duration: 800,
                 create: (x, y, count = 10) => {
                     this.createParticles(x, y, count);
                 }
@@ -390,6 +404,12 @@ class YumeAiFantasy {
             this.isTransitioning = false;
         }
     }
+
+    handleEscape() {
+        if (!this.isTransitioning) {
+            this.showGameOver("MATSURIは吸血鬼にされました");
+        }
+    }
         async executeMagicAttack() {
         const matsuriContainer = document.getElementById('matsuri-container');
         const magicCircle = document.createElement('div');
@@ -427,8 +447,6 @@ class YumeAiFantasy {
             { type: 'SHAKE' }
         ]);
 
-        await this.wait(1000);
-        
         const flashLayer = document.getElementById('flash-layer');
         flashLayer.style.backgroundColor = '#800080';
         flashLayer.classList.remove('hidden');
@@ -501,31 +519,65 @@ class YumeAiFantasy {
         }
     }
 
-    async startBattle() {
-        console.log('Starting battle sequence...');
-        if (this.isTransitioning) return;
-        this.isTransitioning = true;
+    async showMessage(text) {
+        const messageText = document.getElementById('message-text');
+        if (!messageText) return;
 
-        try {
-            const storyScreen = document.getElementById('story-screen');
-            const battleScreen = document.getElementById('battle-screen');
-            
-            await this.fadeOut(storyScreen);
-            storyScreen.classList.add('hidden');
+        const CHAR_DELAY = 15;
+        
+        await this.fadeOut(messageText, 150);
+        messageText.textContent = '';
+        
+        for (const char of text) {
+            messageText.textContent += char;
+            if ('。！？、.!?'.includes(char)) {
+                await this.wait(100);
+            } else {
+                await this.wait(CHAR_DELAY);
+            }
+        }
+        
+        await this.wait(300);
+    }
 
-            battleScreen.classList.remove('hidden');
-            await this.fadeIn(battleScreen);
+    async playEffects(effects) {
+        const promises = effects.map(effect => {
+            return new Promise(resolve => {
+                this.playEffect(effect.type, effect.options);
+                setTimeout(resolve, this.effectTypes[effect.type].duration);
+            });
+        });
+        await Promise.all(promises);
+    }
 
-            this.gameState.currentScene = 'battle';
-            this.updateStatus();
-            await this.showMessage("コマンドを選択してください。");
-            this.enableBattleCommands();
-            
-            console.log('Battle sequence started successfully');
-        } catch (error) {
-            console.error('Battle transition failed:', error);
-        } finally {
-            this.isTransitioning = false;
+    playEffect(effectType, options = {}) {
+        const effect = this.effectTypes[effectType];
+        if (effect) {
+            effect.create(options);
+        }
+    }
+
+    createParticles(x, y, count, options = {}) {
+        const defaults = {
+            color: 'white',
+            size: '3px',
+            duration: 1000
+        };
+        const settings = { ...defaults, ...options };
+
+        for (let i = 0; i < count; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            Object.assign(particle.style, {
+                left: `${x}px`,
+                top: `${y}px`,
+                width: settings.size,
+                height: settings.size,
+                backgroundColor: settings.color
+            });
+
+            document.getElementById('particle-container').appendChild(particle);
+            setTimeout(() => particle.remove(), settings.duration);
         }
     }
         async showSpecialEnding() {
@@ -569,6 +621,23 @@ class YumeAiFantasy {
         } finally {
             this.isTransitioning = false;
         }
+    }
+
+    startEndingParticles() {
+        const particleContainer = document.querySelector('.ending-particles');
+        if (!particleContainer) return;
+
+        const createParticle = () => {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = `${Math.random() * 100}vw`;
+            particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            particleContainer.appendChild(particle);
+            setTimeout(() => particle.remove(), 5000);
+        };
+
+        const particleInterval = setInterval(createParticle, 200);
+        setTimeout(() => clearInterval(particleInterval), 300000);
     }
 
     // ユーティリティ関数
@@ -616,35 +685,6 @@ class YumeAiFantasy {
     showElement(id) {
         const element = document.getElementById(id);
         if (element) element.classList.remove('hidden');
-    }
-
-    async showMessage(text) {
-        const messageText = document.getElementById('message-text');
-        if (!messageText) return;
-
-        await this.fadeOut(messageText);
-        messageText.textContent = '';
-        
-        for (const char of text) {
-            messageText.textContent += char;
-            await this.wait(30);
-        }
-        
-        await this.wait(500);
-    }
-
-    async showBattleMessage() {
-        const message = this.unknownBattleDialogues[
-            Math.floor(Math.random() * this.unknownBattleDialogues.length)
-        ];
-        await this.showMessage(`UNKNOWN: 『${message}』`);
-    }
-
-    async showTalkMessage() {
-        const message = this.unknownTalkDialogues[
-            Math.floor(Math.random() * this.unknownTalkDialogues.length)
-        ];
-        await this.showMessage(`UNKNOWN: 『${message}』`);
     }
 
     handleError(error, context) {
