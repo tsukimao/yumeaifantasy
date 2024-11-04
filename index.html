@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumeAiFantasy</title>
+    <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading...</div>
+        </div>
+        
+        <div id="game-screen" style="display: none;">
+            <div id="background-layer"></div>
+            <div id="character-layer"></div>
+            <div id="ui-layer"></div>
+        </div>
+    </div>
+    <script type="module">
+        import { YumeAiFantasy } from './src/Game.js';
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            window.game = new YumeAiFantasy();
+            window.game.init().catch(error => {
+                console.error('Game initialization failed:', error);
+            });
+        });
+    </script>
+</body>
+</html>
