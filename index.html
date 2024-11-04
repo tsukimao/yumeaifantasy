@@ -17,6 +17,11 @@
             <img id="title-image" src="" alt="YumeAiFantasy">
             <div id="start-text">Touch to Start</div>
         </div>
+
+        <div id="story-screen" class="hidden">
+            <div id="story-text"></div>
+            <button id="next-button">Next</button>
+        </div>
         
         <div id="battle-screen" class="hidden">
             <div id="status-bars">
@@ -30,14 +35,21 @@
                 <button class="command-button">にげる</button>
             </div>
         </div>
+
+        <div id="ending-screen" class="hidden">
+            <div id="ending-text"></div>
+            <div id="ending-buttons">
+                <button id="retry-button">もういちど</button>
+                <button id="hp-button">MATSURIの公式HPへ</button>
+            </div>
+        </div>
     </div>
 
-    <!-- システムの読み込み順序を修正 -->
     <script src="js/systems/AssetManager.js"></script>
     <script src="js/systems/EffectSystem.js"></script>
     <script src="js/systems/SoundSystem.js"></script>
-    <script src="js/systems/BattleSystem.js"></script>
     <script src="js/systems/StorySystem.js"></script>
+    <script src="js/systems/BattleSystem.js"></script>
     <script src="js/systems/SaveSystem.js"></script>
     <script src="js/systems/DebugSystem.js"></script>
     <script src="js/game.js"></script>
