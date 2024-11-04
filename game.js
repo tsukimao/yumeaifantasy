@@ -12,7 +12,8 @@ const game = {
         },
         battleCount: 0,
         darkCommunionInspired: false,
-        isFinalPhase: false
+        isFinalPhase: false,
+        isEffectPlaying: false
     },
     storySequence: [
         "MATSURIは男を追い詰めた",
@@ -51,7 +52,7 @@ const game = {
         };
     },
     async preloadAssets() {
-        const assets = ['YUMEAIFANTASY.title.gif', 'BG.png', 'yumeaimatsuri.png', 'boss.png'];
+        const assets = ['YUMEAIFANTASY.title.gif', 'BG.png', 'yumeaimatsuri.png', 'boss.png', 'magic-circle.png'];
         try {
             const promises = assets.map(asset => {
                 return new Promise((resolve, reject) => {
@@ -75,6 +76,11 @@ const game = {
         document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
         document.getElementById(`${scene}-screen`).style.display = 'block';
         this.gameState.currentScene = scene;
+        if (scene === 'story') {
+            this.showStoryText();
+        } else if (scene === 'battle') {
+            this.startBattle();
+        }
     },
     startStory() {
         this.transitionTo('story');
@@ -82,20 +88,20 @@ const game = {
     },
     showStoryText() {
         const storyTextElement = document.getElementById('story-text');
-        const nextButton = document.getElementById('next-button');
         if (this.gameState.storyIndex < this.storySequence.length) {
             storyTextElement.innerHTML = this.storySequence[this.gameState.storyIndex];
             this.gameState.storyIndex++;
+            setTimeout(() => this.showStoryText(), 3500); // 3.5秒後に次のテキストを表示
         } else {
             this.startBattle();
         }
-        nextButton.addEventListener('click', () => this.showStoryText());
     },
     startBattle() {
         this.transitionTo('battle');
         this.updateStatus();
         this.showBattleMessage("戦闘開始！");
         this.displayCommandButtons();
+        this.gameState.battleCount = 0;
     },
     updateStatus() {
         document.getElementById('hp-bar').querySelector('span').textContent = `HP: ${this.gameState.matsuri.hp}/1000`;
@@ -158,6 +164,7 @@ const game = {
         if (this.gameState.unknown.hp <= 1000 && Math.random() < 0.3) {
             this.gameState.darkCommunionInspired = true;
             this.showBattleMessage("黒の聖餐が解放されました！");
+            this.playEffect('DARK_COMMUNION');
         }
     },
     checkEnemyStatus() {
@@ -177,6 +184,7 @@ const game = {
         const endingTexts = [
             "永き夜の終わりに、一筋の光が差し込む。",
             "幾百年もの間、永遠の命という呪いに縛られ続けた魂が、今、解放の時を迎えようとしていた。",
+            "黒の聖餐――それは、人の世の理から外れた存在を、本来あるべき姿へと導く禁忌の魔法。",
             // ...（他のエンディングテキスト）
         ];
         let index = 0;
@@ -192,14 +200,20 @@ const game = {
         document.getElementById('official-site-button').addEventListener('click', () => window.open('https://reverieneon71.my.canva.site/', '_blank'));
     },
     playEffect(effect) {
-        switch (effect) {
-            case 'FLASH':
-                this.flashEffect();
-                break;
-            case 'MAGIC':
-                this.magicEffect();
-                break;
-            // 他のエフェクトもここに追加
+        if (!this.gameState.isEffectPlaying) {
+            this.gameState.isEffectPlaying = true;
+            switch (effect) {
+                case 'FLASH':
+                    this.flashEffect();
+                    break;
+                case 'MAGIC':
+                    this.magicEffect();
+                    break;
+                case 'DARK_COMMUNION':
+                    this.darkCommunionEffect();
+                    break;
+            }
+            setTimeout(() => this.gameState.isEffectPlaying = false, 500); // エフェクト再生後0.5秒でリセット
         }
     },
     flashEffect() {
@@ -208,7 +222,7 @@ const game = {
         document.getElementById('battle-screen').appendChild(flashElement);
         setTimeout(() => flashElement.remove(), 200);
     },
-      magicEffect() {
+    magicEffect() {
         const magicCircle = document.createElement('div');
         magicCircle.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; background: url("assets/magic-circle.png") no-repeat center; background-size: contain; z-index: 9997; opacity: 0;';
         document.getElementById('battle-screen').appendChild(magicCircle);
@@ -216,6 +230,69 @@ const game = {
             magicCircle.style.animation = 'magic-circle-animation 1s ease-out forwards';
             setTimeout(() => magicCircle.remove(), 1000);
         }, 0);
+    },
+    darkCommunionEffect() {
+        const darkCommunionElement = document.createElement('div');
+        darkCommunionElement.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, #300066, #660066); opacity: 0.8; z-index: 9999;';
+        document.getElementById('battle-screen').appendChild(darkCommunionElement);
+        setTimeout(() => darkCommunionElement.remove(), 1500);
+    },
+    async preloadAssets() {
+        const assets = ['YUMEAIFANTASY.title.gif', 'BG.png', 'yumeaimatsuri.png', 'boss.png', 'magic-circle.png'];
+        try {
+            const promises = assets.map(asset => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = resolve;
+                    img.onerror = () => reject(`Failed to load: ${asset}`);
+                    img.src = `assets/${asset}`;
+                });
+            });
+            await Promise.all(promises);
+            console.log('Assets loaded successfully');
+        } catch (error) {
+            console.error('Asset loading failed:', error);
+            throw new Error(`Asset loading failed: ${error.message}`);
+        }
+    },
+    handleInitializationError(error) {
+        console.error('Initialization error:', error);
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+        this.showErrorMessage('ゲームの初期化に失敗しました。');
+    },
+    showErrorMessage(message) {
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            z-index: 9999;
+        `;
+        errorMessage.textContent = message;
+        const retryButton = document.createElement('button');
+        retryButton.textContent = 'リトライ';
+        retryButton.style.cssText = `
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        `;
+        retryButton.onclick = () => location.reload();
+        errorMessage.appendChild(document.createElement('br'));
+        errorMessage.appendChild(retryButton);
+        document.body.appendChild(errorMessage);
     },
     isInitialized: false,
     async initialize() {
