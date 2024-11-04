@@ -156,24 +156,30 @@ class YumeAiFantasy {
         ];
     }
     async start() {
-        console.log('Starting game initialization...');
-        const loadingScreen = document.getElementById('loading-screen');
-        loadingScreen.style.display = 'flex';
+        console.log("Starting game initialization...");
+        const loadingScreen = document.getElementById("loading-screen");
+        if (loadingScreen) {
+            loadingScreen.style.display = "flex";
+        }
 
         try {
             await this.initializeGame();
             this.bindEvents();
             this.isInitialized = true;
             
-            loadingScreen.style.display = 'none';
-            const titleScreen = document.getElementById('title-screen');
-            titleScreen.style.display = 'flex';
-            titleScreen.style.opacity = '0';
-            await this.fadeIn(titleScreen);
+            if (loadingScreen) {
+                loadingScreen.style.display = "none";
+            }
+            const titleScreen = document.getElementById("title-screen");
+            if (titleScreen) {
+                titleScreen.style.display = "flex";
+                titleScreen.style.opacity = "0";
+                await this.fadeIn(titleScreen);
+            }
             
-            console.log('Game started successfully');
+            console.log("Game started successfully");
         } catch (error) {
-            console.error('Game start failed:', error);
+            console.error("Game start failed:", error);
             this.handleInitializationError(error);
         }
     }
