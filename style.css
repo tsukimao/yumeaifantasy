@@ -1,0 +1,125 @@
+/* style.css */
+:root {
+    --main-bg-color: #000000;
+    --main-text-color: #FFFFFF;
+    --main-border-color: rgba(255, 255, 255, 0.8);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background: var(--main-bg-color);
+    color: var(--main-text-color);
+    font-family: sans-serif;
+}
+
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+/* ローディング画面 */
+#loading-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* タイトル画面 */
+#title-screen img {
+    max-width: 80%;
+    max-height: 70vh;
+    margin-top: 10vh;
+}
+
+.start-text {
+    font-size: clamp(16px, 3vw, 24px);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: blink 1s infinite;
+}
+
+/* 戦闘画面 */
+.status-bar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-align: right;
+}
+
+.characters {
+    position: relative;
+    width: 100%;
+    height: 70%;
+}
+
+.matsuri, .unknown {
+    position: absolute;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.matsuri {
+    right: 10%;
+    width: 25%;
+    height: 40%;
+    bottom: 20%;
+    background-image: url('assets/yumeaimatsuri.png');
+}
+
+.unknown {
+    left: 10%;
+    width: 40%;
+    height: 50%;
+    bottom: 15%;
+    background-image: url('assets/boss.png');
+}
+
+/* エフェクト */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .matsuri { width: 35%; }
+    .battle-commands { bottom: 110px; }
+    button { padding: 12px; font-size: 14px; }
+}
+
+@media (max-width: 480px) {
+    #story-text { font-size: 18px; }
+    button { padding: 10px; font-size: 12px; min-height: 44px; }
+}
