@@ -1,4 +1,3 @@
-/* style.css */
 /* リセットとベース設定 */
 * {
     margin: 0;
@@ -103,12 +102,41 @@ body {
     margin-bottom: 40px;
 }
 
+#next-button {
+    padding: 10px 30px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid white;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#next-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
 /* 戦闘画面 */
 #battle-screen {
     position: fixed;
     width: 100%;
     height: 100%;
-    background: url('BG.png') center/cover;
+    background: url('https://tsukimao.github.io/yumeaifantasy/BG.png') center/cover;
+}
+
+/* キャラクター */
+.character {
+    position: absolute;
+    bottom: 20%;
+}
+
+.character.matsuri {
+    right: 10%;
+    width: 25%;
+}
+
+.character.unknown {
+    left: 10%;
+    width: 40%;
 }
 
 #status-bars {
@@ -233,48 +261,22 @@ body {
     padding: 0 20px;
 }
 
-/* セーブメニュー */
-#save-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+#ending-buttons {
+    margin-top: 30px;
 }
 
-.save-menu-content {
-    background: rgba(0, 0, 0, 0.9);
-    padding: 20px;
+#ending-buttons button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    background: rgba(255, 255, 255, 0.2);
     border: 2px solid white;
-    width: 80%;
-    max-width: 600px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
-.save-slot {
-    background: rgba(255, 255, 255, 0.1);
-    margin: 10px 0;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* デバッグパネル */
-#debug-panel {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    width: 300px;
-    background: rgba(0, 0, 0, 0.9);
-    border: 1px solid #fff;
-    color: #fff;
-    z-index: 10000;
-    font-family: monospace;
+#ending-buttons button:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* アニメーション */
@@ -349,31 +351,4 @@ body {
     border-radius: 5px;
     text-align: center;
     z-index: 9999;
-}
-
-/* サウンド設定パネル */
-#sound-settings {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 1001;
-}
-
-.volume-control {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-}
-
-.volume-control label {
-    color: white;
-    margin-right: 10px;
-    min-width: 80px;
-}
-
-.volume-control input[type="range"] {
-    width: 100px;
 }
