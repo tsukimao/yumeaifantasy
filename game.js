@@ -1,9 +1,84 @@
 class YumeAiFantasy {
     constructor() {
+        // メソッドのバインド
+        this.handleAttack = this.handleAttack.bind(this);
+        this.handleMagic = this.handleMagic.bind(this);
+        this.handleTalk = this.handleTalk.bind(this);
+        this.handleEscape = this.handleEscape.bind(this);
+        
         this.isInitialized = false;
         this.isTransitioning = false;
         this.initializeStoryAndDialogues();
         this.setupEffectSystem();
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.start());
+        } else {
+            this.start();
+        }
+    }
+
+    // エラーハンドリング関数の追加
+    handleInitializationError(error) {
+        console.error('Initialization error:', error);
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+        
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            z-index: 9999;
+        `;
+        errorMessage.textContent = 'ゲームの初期化に失敗しました。ページを更新してください。';
+        
+        const retryButton = document.createElement('button');
+        retryButton.textContent = 'リトライ';
+        retryButton.style.cssText = `
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        `;
+        retryButton.onclick = () => location.reload();
+        
+        errorMessage.appendChild(document.createElement('br'));
+        errorMessage.appendChild(retryButton);
+        document.body.appendChild(errorMessage);
+    }
+
+    setupBattleCommands() {
+        const commands = {
+            'attack': this.handleAttack,
+            'magic': this.handleMagic,
+            'talk': this.handleTalk,
+            'escape': this.handleEscape
+        };
+
+        Object.entries(commands).forEach(([id, handler]) => {
+            const button = document.getElementById(id);
+            if (button) {
+                button.onclick = async (e) => {
+                    e.preventDefault();
+                    if (!this.isTransitioning && this.gameState.currentScene === 'battle') {
+                        await handler();
+                    }
+                };
+            }
+        });
+    }
         
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.start());
@@ -80,7 +155,7 @@ class YumeAiFantasy {
             "全てを終わらせる時が来た。"
         ];
     }
-        async start() {
+    async start() {
         console.log('Starting game initialization...');
         const loadingScreen = document.getElementById('loading-screen');
         loadingScreen.style.display = 'flex';
@@ -101,6 +176,47 @@ class YumeAiFantasy {
             console.error('Game start failed:', error);
             this.handleInitializationError(error);
         }
+    }
+
+    // ここにhandleInitializationErrorメソッドを挿入
+    handleInitializationError(error) {
+        console.error('Initialization error:', error);
+        const loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+        
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'error-message';
+        errorMessage.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            z-index: 9999;
+        `;
+        errorMessage.textContent = 'ゲームの初期化に失敗しました。ページを更新してください。';
+        
+        const retryButton = document.createElement('button');
+        retryButton.textContent = 'リトライ';
+        retryButton.style.cssText = `
+            margin-top: 10px;
+            padding: 5px 15px;
+            background: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        `;
+        retryButton.onclick = () => location.reload();
+        
+        errorMessage.appendChild(document.createElement('br'));
+        errorMessage.appendChild(retryButton);
+        document.body.appendChild(errorMessage);
     }
 
     async initializeGame() {
