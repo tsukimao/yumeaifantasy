@@ -221,8 +221,8 @@ body, html {
         width: 35%;
     }
     #message-window {
-        bottom: 110px;
         width: 95%;
+        bottom: 110px;
     }
     .command-button {
         padding: 12px;
