@@ -1,10 +1,7 @@
 class YumeAiFantasy {
     constructor() {
-        // メソッドのバインド
-        this.handleAttack = this.handleAttack.bind(this);
-        this.handleMagic = this.handleMagic.bind(this);
-        this.handleTalk = this.handleTalk.bind(this);
-        this.handleEscape = this.handleEscape.bind(this);
+        // 初期化前にバインドを行う
+        this.bindMethods();
         
         this.isInitialized = false;
         this.isTransitioning = false;
@@ -16,6 +13,13 @@ class YumeAiFantasy {
         } else {
             this.start();
         }
+    }
+
+    bindMethods() {
+        this.handleAttack = this.handleAttack.bind(this);
+        this.handleMagic = this.handleMagic.bind(this);
+        this.handleTalk = this.handleTalk.bind(this);
+        this.handleEscape = this.handleEscape.bind(this);
     }
 
     // エラーハンドリング関数の追加
