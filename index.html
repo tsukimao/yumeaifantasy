@@ -1,62 +1,63 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YumeAiFantasy</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="loading-screen">
-        <div class="loading-spinner"></div>
-        <p>Loading...</p>
-    </div>
     <div id="game-container">
-        <div id="title-screen" class="screen">
-            <img src="assets/YUMEAIFANTASY.title.gif" alt="Game Title" id="title-image">
-            <p>Touch to Start</p>
+        <div id="loading-screen">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading...</div>
         </div>
-        <div id="story-screen" class="screen">
+        
+        <div id="title-screen" class="hidden">
+            <img id="title-image" src="" alt="YumeAiFantasy">
+            <div id="start-text">Touch to Start</div>
+        </div>
+        
+        <div id="story-screen" class="hidden">
             <div id="story-text"></div>
             <button id="next-button">Next</button>
         </div>
-        <div id="battle-screen" class="screen">
-            <div id="battle-background"></div>
-            <div class="character-container matsuri"></div>
-            <div class="character-container unknown"></div>
-            <div id="status-bar">
-                <div id="hp-bar">
-                    <span>HP: 1000/1000</span>
-                    <div class="bar" style="width: 100%; background: linear-gradient(to right, #ff0000, #ff6666);"></div>
-                </div>
-                <div id="mp-bar">
-                    <span>MP: 100/100</span>
-                    <div class="bar" style="width: 100%; background: linear-gradient(to right, #0066ff, #66a3ff);"></div>
-                </div>
+        
+        <div id="battle-screen" class="hidden">
+            <div id="status-bars">
+                <div id="hp-bar">HP: 1000/1000</div>
+                <div id="mp-bar">MP: 100/100</div>
             </div>
-            <div id="message-window">
-                <p id="message-text"></p>
-            </div>
-            <div id="command-window">
+            <div id="battle-commands">
                 <button class="command-button">たたかう</button>
                 <button class="command-button">まほう</button>
                 <button class="command-button">はなす</button>
                 <button class="command-button">にげる</button>
             </div>
         </div>
-        <div id="ending-screen" class="screen">
-            <div id="ending-background"></div>
+        
+        <div id="ending-screen" class="hidden">
             <div id="ending-text"></div>
-            <div id="ending-choices">
+            <div id="ending-buttons">
                 <button id="retry-button">もういちど</button>
-                <button id="official-site-button">MATSURIの公式HPへ</button>
+                <button id="hp-button">MATSURIの公式HPへ</button>
             </div>
         </div>
-        <div id="game-over-screen" class="screen">
-            <p>MATSURIは吸血鬼にされました</p>
-            <button id="retry-button">もういちど</button>
-        </div>
     </div>
-    <script src="game.js"></script>
+
+    <!-- システムスクリプト -->
+    <script src="js/utils/AssetManager.js"></script>
+    <script src="js/utils/DebugSystem.js"></script>
+    
+    <!-- ゲームシステム -->
+    <script src="js/systems/BattleSystem.js"></script>
+    <script src="js/systems/EffectSystem.js"></script>
+    <script src="js/systems/SoundSystem.js"></script>
+    <script src="js/systems/StorySystem.js"></script>
+    <script src="js/systems/SaveSystem.js"></script>
+    
+    <!-- メインゲーム -->
+    <script src="js/game.js"></script>
 </body>
 </html>
