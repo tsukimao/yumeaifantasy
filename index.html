@@ -1,33 +1,54 @@
+// index.html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YumeAiFantasy</title>
-    <link rel="stylesheet" href="/src/styles/main.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
         <div id="loading-screen">
-            <div class="loading-spinner"></div>
+            <div class="spinner"></div>
             <div class="loading-text">Loading...</div>
         </div>
         
-        <div id="game-screen" style="display: none;">
-            <div id="background-layer"></div>
-            <div id="character-layer"></div>
-            <div id="ui-layer"></div>
+        <div id="title-screen" class="screen">
+            <img src="assets/YUMEAIFANTASY.title.gif" alt="タイトル">
+            <div class="start-text">Touch to Start</div>
+        </div>
+        
+        <div id="story-screen" class="screen">
+            <div id="story-text"></div>
+            <button id="next-button">Next</button>
+        </div>
+        
+        <div id="battle-screen" class="screen">
+            <div class="status-bar">
+                <div class="hp-bar">HP: <span id="hp">1000</span>/1000</div>
+                <div class="mp-bar">MP: <span id="mp">100</span>/100</div>
+            </div>
+            <div class="characters">
+                <div class="matsuri"></div>
+                <div class="unknown"></div>
+            </div>
+            <div class="battle-commands">
+                <button onclick="game.attack()">たたかう</button>
+                <button onclick="game.magic()">まほう</button>
+                <button onclick="game.talk()">はなす</button>
+                <button onclick="game.escape()">にげる</button>
+            </div>
+        </div>
+        
+        <div id="ending-screen" class="screen">
+            <div id="ending-text"></div>
+            <div class="ending-buttons">
+                <button onclick="game.restart()">もういちど</button>
+                <button onclick="game.goToOfficial()">公式HPへ</button>
+            </div>
         </div>
     </div>
-    <script type="module">
-        import { YumeAiFantasy } from './src/Game.js';
-        
-        window.addEventListener('DOMContentLoaded', () => {
-            window.game = new YumeAiFantasy();
-            window.game.init().catch(error => {
-                console.error('Game initialization failed:', error);
-            });
-        });
-    </script>
+    <script src="game.js"></script>
 </body>
 </html>
