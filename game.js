@@ -1,221 +1,149 @@
-import { gsap } from 'gsap';
-
-class AssetLoader {
-  constructor() {
-    this.assets = new Map();
-    this.baseUrl = 'https://tsukimao.github.io/yumeaifantasy';
-  }
-
-  async loadImage(name) {
-    if (this.assets.has(name)) {
-      return this.assets.get(name);
-    }
-
-    try {
-      const img = new Image();
-      const loadPromise = new Promise((resolve, reject) => {
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error(`Failed to load image: ${name}`));
-      });
-
-      img.src = `${this.baseUrl}/${name}`;
-      const loadedImg = await loadPromise;
-      this.assets.set(name, loadedImg);
-      return loadedImg;
-    } catch (error) {
-      console.error(`Error loading ${name}:`, error);
-      throw error;
-    }
-  }
-
-  getAsset(name) {
-    return this.assets.get(name);
-  }
-}
-
-class GameState {
-  constructor() {
-    this.currentScene = 'loading';
-    this.storyIndex = 0;
-    this.matsuri = {
-      hp: 1000,
-      maxHp: 1000,
-      mp: 100,
-      maxMp: 100
-    };
-    this.unknown = {
-      hp: 2000,
-      maxHp: 2000
-    };
-    this.battleCount = 0;
-    this.darkCommunionInspired = false;
-  }
-}
-
+// game.js
 class YumeAiFantasy {
-  constructor() {
-    this.assetLoader = new AssetLoader();
-    this.gameState = new GameState();
-    this.isInitialized = false;
-    this.requiredAssets = [
-      'YUMEAIFANTASY.title.gif',
-      'BG.png',
-      'yumeaimatsuri.png',
-      'boss.png'
-    ];
-  }
-
-  async init() {
-    try {
-      await this.preloadAssets();
-      this.setupEventListeners();
-      this.isInitialized = true;
-      this.showTitleScreen();
-    } catch (error) {
-      console.error('Initialization error:', error);
-      this.handleInitializationError(error);
-    }
-  }
-
-  async preloadAssets() {
-    try {
-      const loadPromises = this.requiredAssets.map(asset => 
-        this.assetLoader.loadImage(asset)
-      );
-      await Promise.all(loadPromises);
-      return true;
-    } catch (error) {
-      throw new Error(`Asset loading failed: ${error.message}`);
-    }
-  }
-
-  setupEventListeners() {
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('command-button')) {
-        const command = e.target.dataset.command;
-        this.handleCommand(command);
-      }
-    });
-
-    window.addEventListener('error', (e) => {
-      console.error('Runtime error:', e);
-      this.handleRuntimeError(e);
-    });
-  }
-
-  showTitleScreen() {
-    if (!this.isInitialized) {
-      console.error('Game not initialized');
-      return;
-    }
-
-    this.gameState.currentScene = 'title';
-    const gameScreen = document.getElementById('game-screen');
-    const loadingScreen = document.getElementById('loading-screen');
-
-    if (loadingScreen) {
-      loadingScreen.classList.add('hidden');
+    constructor() {
+        this.gameState = {
+            currentScene: 'loading',
+            storyIndex: 0,
+            matsuri: { hp: 1000, mp: 100 },
+            unknown: { hp: 2000 },
+            battleCount: 0
+        };
+        
+        this.storyTexts = [
+            "MATSURIは男を追い詰めた",
+            "UNKNOWN: 『私はかつて人間だった。だが、運命は私を吸血鬼へと変えた。』",
+            // ... 他のストーリーテキスト
+        ];
+        
+        this.init();
     }
     
-    if (gameScreen) {
-      gameScreen.classList.remove('hidden');
-      
-      const backgroundLayer = document.getElementById('background-layer');
-      if (backgroundLayer) {
-        const titleImage = this.assetLoader.getAsset('YUMEAIFANTASY.title.gif');
-        if (titleImage) {
-          backgroundLayer.style.backgroundImage = `url(${titleImage.src})`;
-          backgroundLayer.style.backgroundSize = 'cover';
-          backgroundLayer.style.backgroundPosition = 'center';
+    async init() {
+        try {
+            await this.loadAssets();
+            this.bindEvents();
+            this.showScene('title');
+        } catch (error) {
+            console.error('初期化エラー:', error);
+            this.showError('ゲームの初期化に失敗しました。');
         }
-      }
-      
-      const touchToStart = document.createElement('div');
-      touchToStart.textContent = 'Touch to Start';
-      touchToStart.style.cssText = `
-        position: absolute;
-        bottom: 20%;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: clamp(16px, 3vw, 24px);
-        color: white;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        animation: blink 1s infinite;
-      `;
-      gameScreen.appendChild(touchToStart);
-
-      const startHandler = () => {
-        if (this.gameState.currentScene === 'title') {
-          touchToStart.remove();
-          gameScreen.removeEventListener('click', startHandler);
-          this.startStory();
+    }
+    
+    async loadAssets() {
+        const assets = [
+            'YUMEAIFANTASY.title.gif',
+            'BG.png',
+            'yumeaimatsuri.png',
+            'boss.png'
+        ];
+        
+        const promises = assets.map(asset => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = resolve;
+                img.onerror = () => reject(`Failed to load: ${asset}`);
+                img.src = `assets/${asset}`;
+            });
+        });
+        
+        await Promise.all(promises);
+    }
+    
+    showScene(sceneName) {
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.style.display = 'none';
+        });
+        document.getElementById(`${sceneName}-screen`).style.display = 'block';
+        this.gameState.currentScene = sceneName;
+    }
+    
+    // 戦闘コマンド
+    attack() {
+        const damage = Math.floor(Math.random() * 20) + 40;
+        this.gameState.unknown.hp -= damage;
+        this.showEffect('flash');
+        this.showDamage(damage);
+        this.checkBattleEnd();
+    }
+    
+    magic() {
+        if (this.gameState.matsuri.mp >= 15) {
+            const damage = Math.floor(Math.random() * 200) + 100;
+            this.gameState.matsuri.mp -= 15;
+            this.gameState.unknown.hp -= damage;
+            this.showEffect('magic');
+            this.showDamage(damage);
+            this.updateStatus();
+            this.checkBattleEnd();
         }
-      };
-
-      gameScreen.addEventListener('click', startHandler);
     }
-  }
-
-  startStory() {
-    this.gameState.currentScene = 'story';
-    // Story implementation will be added in subsequent updates
-  }
-
-  handleCommand(command) {
-    if (!this.isInitialized) return;
-
-    switch (command) {
-      case 'attack':
-        this.handleAttack();
-        break;
-      case 'magic':
-        this.handleMagic();
-        break;
-      case 'talk':
-        this.handleTalk();
-        break;
-      case 'escape':
-        this.handleEscape();
-        break;
+    
+    talk() {
+        this.gameState.battleCount++;
+        if (this.gameState.unknown.hp <= 1000 && Math.random() < 0.3) {
+            this.activateDarkCommunion();
+        }
+        this.checkBattleCount();
     }
-  }
-
-  handleInitializationError(error) {
-    const loadingScreen = document.getElementById('loading-screen');
-    if (loadingScreen) {
-      loadingScreen.classList.add('hidden');
+    
+    escape() {
+        this.gameOver();
     }
-
-    this.showErrorMessage('ゲームの初期化に失敗しました。ページを再読み込みしてください。');
-  }
-
-  handleRuntimeError(error) {
-    console.error('Runtime error:', error);
-    this.showErrorMessage('エラーが発生しました。ページを再読み込みしてください。');
-  }
-
-  showErrorMessage(message) {
-    const existingError = document.querySelector('.error-message');
-    if (existingError) {
-      existingError.remove();
+    
+    // エフェクト
+    showEffect(type) {
+        const effect = document.createElement('div');
+        effect.className = `effect ${type}`;
+        document.body.appendChild(effect);
+        setTimeout(() => effect.remove(), 1000);
     }
-
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.innerHTML = `
-      <div class="error-content">
-        <p>${message}</p>
-        <button onclick="location.reload()">再読み込み</button>
-      </div>
-    `;
-    document.body.appendChild(errorDiv);
-  }
+    
+    showDamage(amount) {
+        const damageText = document.createElement('div');
+        damageText.className = 'damage-text';
+        damageText.textContent = amount;
+        document.querySelector('.unknown').appendChild(damageText);
+        setTimeout(() => damageText.remove(), 1000);
+    }
+    
+    // ゲーム状態管理
+    checkBattleEnd() {
+        if (this.gameState.unknown.hp <= 0) {
+            this.showEnding();
+        }
+    }
+    
+    checkBattleCount() {
+        if (this.gameState.battleCount >= 30) {
+            this.gameOver();
+        }
+    }
+    
+    updateStatus() {
+        document.getElementById('hp').textContent = this.gameState.matsuri.hp;
+        document.getElementById('mp').textContent = this.gameState.matsuri.mp;
+    }
+    
+    // エンディング処理
+    showEnding() {
+        this.showScene('ending');
+        this.playEndingSequence();
+    }
+    
+    gameOver() {
+        this.showScene('ending');
+        document.getElementById('ending-text').textContent = 
+            'MATSURIは吸血鬼にされました';
+    }
+    
+    restart() {
+        location.reload();
+    }
+    
+    goToOfficial() {
+        window.location.href = 'https://reverieneon71.my.canva.site/';
+    }
 }
 
-// Initialize game
-window.addEventListener('DOMContentLoaded', () => {
-  window.game = new YumeAiFantasy();
-  window.game.init().catch(error => {
-    console.error('Game initialization failed:', error);
-  });
-});
+// ゲーム開始
+const game = new YumeAiFantasy();
